@@ -1,11 +1,9 @@
-import { Button } from "./components/ui/button";
+import MainContent from "./componentss/MainContent";
+import Swiper from "./componentss/Swiper";
 function App() {
   return (
-    <div className="h-screen text-white">
-      HELLO WORLD
-      <Button>click</Button>
-      <Button variant={"outline"}>cancel</Button>
-      <Button variant={"destructive"}>delete</Button>
+    <div className="h-screen text-black">
+      <MainContent />
     </div>
   );
 }
