@@ -5,7 +5,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "../components/ui/carousel";
+} from "@/components/ui/carousel";
 
 export default function Swiper() {
   return (

@@ -1,10 +1,12 @@
-import MainContent from "./componentss/MainContent";
-import Swiper from "./componentss/Swiper";
+import LandingPage from "./pages/landing-page/landing-page";
+import { Routes, Route, HashRouter } from "react-router-dom";
 function App() {
   return (
-    <div className="h-screen text-black">
-      <MainContent />
-    </div>
+    <HashRouter>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+      </Routes>
+    </HashRouter>
   );
 }
 
