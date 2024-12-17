@@ -1,38 +1,64 @@
-import React from "react";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
+import React, { useState, useEffect } from "react";
 
 export default function Swiper() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const totalSlides = 4;
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prevSlide) => (prevSlide + 1) % totalSlides);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [totalSlides]);
+
   return (
-    <div className="flex justify-center items-center ">
-      <Carousel className="relative w-full ">
-        {" "}
-        {/* Adjust height here */}
-        <CarouselContent className="flex overflow-hidden h-full">
-          {" "}
-          {/* Ensure content takes full height */}
-          <CarouselItem className="flex-shrink-0 w-full h-full flex items-center justify-center bg-gray-200">
-            <img
-              src="https://img.freepik.com/free-psd/realistic-fast-food-template-design_23-2149623421.jpg" // Adjusted path
-              alt="Slide 1"
-              className="w-full h-full object-cover"
-            />
-          </CarouselItem>
-          <CarouselItem className="flex-shrink-0 w-full h-full flex items-center justify-center bg-gray-300">
-            Slide 2
-          </CarouselItem>
-          <CarouselItem className="flex-shrink-0 w-full h-full flex items-center justify-center bg-gray-400">
-            Slide 3
-          </CarouselItem>
-        </CarouselContent>
-        <CarouselPrevious className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full cursor-pointer" />
-        <CarouselNext className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-full cursor-pointer" />
-      </Carousel>
+    <div className="relative flex m-auto justify-center items-center w-3/4 overflow-hidden">
+      <div
+        className="flex transition-transform duration-500 ease-in-out"
+        style={{
+          transform: `translateX(-${currentSlide * 100}%)`,
+          width: `${totalSlides * 100}%`,
+        }}
+      >
+        <div className="relative w-full flex-shrink-0">
+          <img
+            src="/src/assets/c1.png"
+            alt="Slide 1"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-center bg-black/50 p-4 rounded-md">
+            <h1 className="text-4xl text-white font-bold mb-2">
+              Find your Table for any occasion
+            </h1>
+            <p className="text-white text-lg">
+              Discover the perfect spot for every event, from date night to a
+              birthday celebration
+            </p>
+          </div>
+        </div>
+        <div className="relative w-full flex-shrink-0">
+          <img
+            src="/src/assets/c2.png"
+            alt="Slide 2"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="relative w-full flex-shrink-0">
+          <img
+            src="/src/assets/c3.png"
+            alt="Slide 3"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="relative w-full flex-shrink-0">
+          <img
+            src="/src/assets/c4.png"
+            alt="Slide 4"
+            className="w-full h-full object-cover"
+          />
+        </div>
+      </div>
     </div>
   );
 }
