@@ -5,17 +5,15 @@ import { Recommended_res } from "@/components/landing-page/RecommendedRestaurant
 import FeaturedDishes from "@/components/landing-page/FeaturedDishes";
 import Footer from "@/components/landing-page/Footer";
 import Rates from "@/components/landing-page/rates";
+import Layout from "../../components/layout/layout";
 
 export default function LandingPage() {
   return (
-    <div>
-      <Navbar />
+    <Layout className="py-4">
       <Swiper />
       <Recommended_res />
       <FeaturedDishes />
       <Rates />
-
-      <Footer />
-    </div>
+    </Layout>
   );
 }

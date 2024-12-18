@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Search } from "lucide-react";
 
 export default function Swiper() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -13,7 +14,37 @@ export default function Swiper() {
   }, [totalSlides]);
 
   return (
-    <div className="relative flex m-auto justify-center items-center w-3/4 overflow-hidden">
+    <div className="relative flex m-auto justify-center items-center w-3/4 overflow-hidden rounded-2xl max-h-[60vh]">
+      {/* Text overlay */}
+      <div className="absolute top-3/4 z-[10] left-8 transform -translate-y-3/4 text-white p-4 space-y-4 rounded-md">
+        <h1 className="text-[48px] text-white font-bold ">
+          Find your Table for any occasion
+        </h1>
+        <p className="text-white text-lg">
+          Discover the perfect spot for every event, from date night to a
+          birthday celebration
+        </p>
+        <div className="relative max-w-2xl w-full">
+          <div className="flex items-center bg-white rounded-2xl shadow-md py-1 px-2">
+            <div className="flex items-center pl-4 flex-grow h-[66px] ">
+              <Search className="w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search for restaurants"
+                className="w-full px-3 py-2 bg-transparent outline-none text-gray-700 placeholder-gray-500"
+              />
+            </div>
+            <button className="px-6 py-2 bg-red-500 text-white h-[52px] rounded-2xl hover:bg-red-600 transition-colors m-1">
+              Find a table
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Gradient overlay for shadow effect */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-[5]"></div>
+
+      {/* Slider content */}
       <div
         className="flex transition-transform duration-500 ease-in-out"
         style={{
@@ -27,15 +58,6 @@ export default function Swiper() {
             alt="Slide 1"
             className="w-full h-full object-cover"
           />
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white text-center bg-black/50 p-4 rounded-md">
-            <h1 className="text-4xl text-white font-bold mb-2">
-              Find your Table for any occasion
-            </h1>
-            <p className="text-white text-lg">
-              Discover the perfect spot for every event, from date night to a
-              birthday celebration
-            </p>
-          </div>
         </div>
         <div className="relative w-full flex-shrink-0">
           <img
