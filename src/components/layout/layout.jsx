@@ -3,7 +3,7 @@ import Navbar from "../landing-page/Navbar";
 import Footer from "../landing-page/Footer";
 export default function Layout({ children }) {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen font-Epilogue">
       {/* Navbar */}
       <Navbar />
 

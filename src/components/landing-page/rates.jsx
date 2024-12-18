@@ -8,14 +8,7 @@ function StarRating({ rating }) {
   return (
     <div className="flex items-center">
       {Array.from({ length: rating }, (_, index) => (
-        <img
-          key={index}
-          src={starImage}
-          alt="Star"
-          width={starSize}
-          height={starSize}
-          className="mr-1"
-        />
+        <span className="flex text-red-500 text-2xl mb-1">★ </span>
       ))}
     </div>
   );
