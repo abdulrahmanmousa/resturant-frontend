@@ -1,5 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 export default function Navbar() {
   return (
@@ -15,15 +16,15 @@ export default function Navbar() {
         </div>
 
         <div className="flex-grow flex justify-end space-x-20">
-          <a href="/browse" className="text-lg">
-            Browse
-          </a>
+          <Link to="/restaurants" className="text-lg">
+            restaurants
+          </Link>
           <a href="/help" className="text-lg">
             Help
           </a>
-          <Button href="/signup" className="text-lg">
-            Sign in
-          </Button>
+          <Link to="/login" className="text-lg">
+            <Button className="text-lg">Sign in</Button>
+          </Link>
         </div>
       </div>
     </div>

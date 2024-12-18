@@ -2,7 +2,7 @@ import React from "react";
 
 export default function MainContent() {
   return (
-    <div className="flex justify-center items-center h-screen bg-white">
+    <div className="flex justify-center items-center  bg-white">
       <div className="w-[400px] p-6">
         {/* Heading */}
         <h1 className="text-2xl font-bold mb-6 text-gray-900">Welcome back!</h1>
