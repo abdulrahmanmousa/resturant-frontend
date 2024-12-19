@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Search } from "lucide-react";
+import Img1 from "../../assets/c1.png";
+import Img2 from "../../assets/c2.png";
+import Img3 from "../../assets/c3.png";
+import Img4 from "../../assets/c4.png";
 
 export default function Swiper() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -54,28 +58,28 @@ export default function Swiper() {
       >
         <div className="relative w-full flex-shrink-0">
           <img
-            src="/src/assets/c1.png"
+            src={Img1}
             alt="Slide 1"
             className="w-full h-full object-cover"
           />
         </div>
         <div className="relative w-full flex-shrink-0">
           <img
-            src="/src/assets/c2.png"
+            src={Img2}
             alt="Slide 2"
             className="w-full h-full object-cover"
           />
         </div>
         <div className="relative w-full flex-shrink-0">
           <img
-            src="/src/assets/c3.png"
+            src={Img3}
             alt="Slide 3"
             className="w-full h-full object-cover"
           />
         </div>
         <div className="relative w-full flex-shrink-0">
           <img
-            src="/src/assets/c4.png"
+            src={Img4}
             alt="Slide 4"
             className="w-full h-full object-cover"
           />

@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import Logo from "@/assets/logo.svg";
 
 export default function Navbar() {
   const links = [
@@ -13,7 +14,7 @@ export default function Navbar() {
     <div className="sticky top-0 z-[999] bg-white">
       <div className="flex px-10 gap-9 border-b py-4">
         <div className="flex items-center space-x-4">
-          <img src="src/assets/logo.svg" alt="page logo" className="w-8 h-8" />
+          <img src={Logo} alt="page logo" className="w-8 h-8" />
           <h1 className="text-xl font-bold">Foodie</h1>
         </div>
 
