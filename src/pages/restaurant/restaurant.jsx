@@ -262,7 +262,7 @@ export default function Restaurant() {
         {/* taple Availability */}
         <div className="mt-8 mb-8  w-3/4 w-full relative gap-2  ">
           <h1 className=" text-4xl font-bold mb-6 text-center text-gray-800">
-            Taple Availability
+            Table Availability
           </h1>
           <img
             src="https://i.pinimg.com/736x/3d/5b/a8/3d5ba8dbfc44cb0289960774e742c38e.jpg"
