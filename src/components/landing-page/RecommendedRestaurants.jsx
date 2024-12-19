@@ -149,29 +149,29 @@ export function Recommended_res() {
               key={index}
             >
               {" "}
-              <CarouselItem key={index} className="basis-1/5">
-                <Card className="w-full shadow-md hover:scale-105 transition-transform">
+              <CarouselItem
+                key={index}
+                className="basis-1/5 border-none shadow-none"
+              >
+                <Card className="w-full  hover:bg-gray-200 transition-all border-none shadow-none ">
                   <img
                     src={restaurant.image}
                     alt={restaurant.name}
-                    className="w-full h-[140px] object-cover rounded-t-md"
+                    className="w-full h-[160px] object-cover p-2 rounded-3xl"
                   />
-                  <CardHeader>
+                  <CardHeader className="px-4 py-2">
                     <CardTitle>{restaurant.name}</CardTitle>
-                    <CardDescription>{restaurant.description}</CardDescription>
+                    <CardDescription>
+                      <p className="text-sm text-gray-600 text-center">
+                        Experience world-class dining.
+                      </p>
+                    </CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-gray-600 text-center">
-                      Experience world-class dining.
-                    </p>
-                  </CardContent>
                 </Card>
               </CarouselItem>
             </Link>
           ))}
         </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
       </Carousel>
     </div>
   );
