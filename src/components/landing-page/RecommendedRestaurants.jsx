@@ -135,7 +135,7 @@ export function Recommended_res() {
 
   return (
     <div className="mt-14">
-      <h1 className="text-4xl font-bold mb-6 text-center text-gray-800">
+      <h1 className=" text-4xl font-bold mb-6 text-center text-gray-800">
         Recommended Restaurants
       </h1>
       <Carousel className="w-3/4 m-auto">

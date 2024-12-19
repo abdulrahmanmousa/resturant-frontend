@@ -1,7 +1,7 @@
 import React from "react";
 import Layout from "../../components/layout/layout";
 import { useParams } from "react-router-dom";
-import { Phone, Clock } from "lucide-react";
+import { Phone, Clock, UtensilsCrossed } from "lucide-react";
 
 export default function Restaurant() {
   const { id } = useParams();
@@ -11,6 +11,16 @@ export default function Restaurant() {
     { label: 3, percentage: 10 },
     { label: 2, percentage: 5 },
     { label: 1, percentage: 5 },
+  ];
+  const tables = [
+    { id: 1, name: "Table 1", capacity: "4 seats", status: "Available" },
+    { id: 2, name: "Table 2", capacity: "2 seats", status: "Reserved" },
+    { id: 3, name: "Table 3", capacity: "6 seats", status: "Available" },
+    { id: 4, name: "Table 4", capacity: "8 seats", status: "Occupied" },
+    { id: 5, name: "Table 5", capacity: "4 seats", status: "Reserved" },
+    { id: 6, name: "Table 6", capacity: "2 seats", status: "Available" },
+    { id: 7, name: "Table 7", capacity: "10 seats", status: "Occupied" },
+    { id: 8, name: "Table 8", capacity: "4 seats", status: "Available" },
   ];
   const restaurants = [
     {
@@ -137,7 +147,6 @@ export default function Restaurant() {
   return (
     <Layout>
       <div className="bg-white p-8 m-auto justify-center items-center w-3/4">
-        {/* Restaurant Banner */}
         <div className="relative mb-6">
           <img
             src={restaurant.image}
@@ -175,7 +184,7 @@ export default function Restaurant() {
           </div>
 
           {/* Contact Information */}
-          <div className="grid grid-rows-2 gap-6 mb-6">
+          <div className="grid grid-rows-2 gap-6 m-6">
             <div className="flex items-center space-x-3">
               <Phone className="text-gray-700" size={24} />
               <div>
@@ -196,7 +205,28 @@ export default function Restaurant() {
         </div>
 
         {/* test */}
-        <div className="flex items-start space-x-8">
+
+        {/* Menu Section */}
+        <h2 className="text-2xl font-bold m-6">Menu</h2>
+        <div className="grid grid-cols-2 gap-4">
+          {restaurant.menu.map((item, index) => (
+            <div
+              key={index}
+              className="flex items-center space-x-4 border p-4 rounded-md shadow-sm"
+            >
+              <img
+                src={item.image}
+                alt={item.name}
+                className="w-12 h-12 rounded-full"
+              />
+              <div>
+                <h3 className="font-bold text-gray-800">{item.name}</h3>
+                <p className="text-gray-600">{item.price}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="flex items-start space-x-8 py-10 ">
           {/* Left Column: Overall Rating */}
           <div className="flex flex-col items-center">
             <h2 className="text-5xl font-bold text-gray-800">4.5</h2>
@@ -205,7 +235,7 @@ export default function Restaurant() {
           </div>
 
           {/* Right Column: Rating Bars */}
-          <div className="flex-1 space-y-2">
+          <div className="flex-1 space-y-2  ">
             {ratings.map((rating) => (
               <div key={rating.label} className="flex items-center space-x-2">
                 {/* Rating Number */}
@@ -229,48 +259,48 @@ export default function Restaurant() {
             ))}
           </div>
         </div>
-        {/* Table Availability */}
-        <div className="mt-8 mb-8 w-1/2">
-          <h2 className="text-2xl font-bold mb-4">Table Availability</h2>
-          <div className="space-y-4">
-            <h1>Date</h1>
-            <select className="w-full border p-2 rounded-xl">
-              <option>Choose date</option>
-            </select>
-            <h1>Time</h1>
-            <select className="w-full border p-2 rounded-xl">
-              <option>Choose time</option>
-            </select>
-            <h1>Guest Count</h1>
-            <select className="w-full border p-2 rounded-xl">
-              <option>Choose guest count</option>
-            </select>
+        {/* taple Availability */}
+        <div className="mt-8 mb-8  w-3/4 w-full relative gap-2  ">
+          <h1 className=" text-4xl font-bold mb-6 text-center text-gray-800">
+            Table Availability
+          </h1>
+          <img
+            src="https://i.pinimg.com/736x/3d/5b/a8/3d5ba8dbfc44cb0289960774e742c38e.jpg"
+            alt="table"
+            className="max-w-[70vw] mx-auto object-cover rotate-90 max-h-[70vh] "
+          />
+          <div className="grid  gap-3  ">
+            <div className="grid gap-3">
+              <div className="grid grid-cols-4 gap-4 p-4">
+                {tables.map((table) => (
+                  <div
+                    key={table.id}
+                    className="bg-gray-200 flex flex-col items-center justify-center p-4 rounded-md shadow-md"
+                  >
+                    <UtensilsCrossed />
+                    <h1 className="font-bold mt-2">{table.name}</h1>
+                    <p className="text-sm">Capacity: {table.capacity}</p>
+                    <p
+                      className={`text-xs mt-1 ${
+                        table.status === "Available"
+                          ? "text-green-600"
+                          : table.status === "Reserved"
+                          ? "text-yellow-600"
+                          : "text-red-600"
+                      }`}
+                    >
+                      Status: {table.status}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div />
+            </div>
           </div>
         </div>
-
-        {/* Menu Section */}
-        <h2 className="text-2xl font-bold mb-4">Menu</h2>
-        <div className="grid grid-cols-2 gap-4">
-          {restaurant.menu.map((item, index) => (
-            <div
-              key={index}
-              className="flex items-center space-x-4 border p-4 rounded-md shadow-sm"
-            >
-              <img
-                src={item.image}
-                alt={item.name}
-                className="w-12 h-12 rounded-full"
-              />
-              <div>
-                <h3 className="font-bold text-gray-800">{item.name}</h3>
-                <p className="text-gray-600">{item.price}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-
         {/* Table Booking Section */}
-        <div className="mt-8 w-1/2 ">
+        <div className="mt-8 w-3/4 mx-auto ">
           <h2 className="text-2xl font-bold mb-4">Book a Table</h2>
           <form className="space-y-4">
             <select className="w-full p-2 border rounded-xl">
@@ -290,4 +320,27 @@ export default function Restaurant() {
       </div>
     </Layout>
   );
+}
+{
+  /* Table Booking Section */
+}
+{
+  /* <div className="mt-8 w-1/2 ">
+          <h2 className="text-2xl font-bold mb-4">Book a Table</h2>
+          <form className="space-y-4">
+            <select className="w-full p-2 border rounded-xl">
+              <option>Choose date</option>
+            </select>
+            <select className="w-full p-2 border rounded-xl">
+              <option>Choose time</option>
+            </select>
+            <select className="w-full p-2 border rounded-xl">
+              <option>Choose guest count</option>
+            </select>
+            <button className="w-full bg-red-500 text-white py-2 rounded-xl hover:bg-red-600">
+              Find a Table
+            </button>
+          </form>
+        </div>
+      </div> */
 }

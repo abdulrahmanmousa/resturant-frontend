@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 export default function MainContent() {
   return (
@@ -57,9 +58,11 @@ export default function MainContent() {
         </div>
 
         {/* Create Account Button */}
-        <button className="w-full bg-gray-200 text-gray-800 font-semibold py-2 rounded-md hover:bg-gray-300 transition">
-          Create an account
-        </button>
+        <Link to="/register">
+          <button className="w-full bg-gray-200 text-gray-800 font-semibold py-2 rounded-md hover:bg-gray-300 transition">
+            Create an account
+          </button>
+        </Link>
 
         {/* Continue with Options */}
         <div className="text-center mt-6 text-gray-500 text-sm">
