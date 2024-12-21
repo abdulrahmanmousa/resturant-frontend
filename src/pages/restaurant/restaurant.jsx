@@ -2,6 +2,7 @@ import React from "react";
 import Layout from "../../components/layout/layout";
 import { useParams } from "react-router-dom";
 import { Phone, Clock, UtensilsCrossed } from "lucide-react";
+import DateTimePicker from "../../components/DateTimePicker";
 
 export default function Restaurant() {
   const { id } = useParams();
@@ -267,7 +268,7 @@ export default function Restaurant() {
           <img
             src="https://i.pinimg.com/736x/3d/5b/a8/3d5ba8dbfc44cb0289960774e742c38e.jpg"
             alt="table"
-            className="max-w-[70vw] mx-auto object-cover rotate-90 max-h-[70vh] "
+            className="max-w-[70vw] mx-auto object-cover rounded-3xl overflow-hidden rotate-90 max-h-[50vh] "
           />
           <div className="grid  gap-3  ">
             <div className="grid gap-3">
@@ -285,8 +286,8 @@ export default function Restaurant() {
                         table.status === "Available"
                           ? "text-green-600"
                           : table.status === "Reserved"
-                          ? "text-yellow-600"
-                          : "text-red-600"
+                            ? "text-yellow-600"
+                            : "text-red-600"
                       }`}
                     >
                       Status: {table.status}
@@ -300,12 +301,11 @@ export default function Restaurant() {
           </div>
         </div>
         {/* Table Booking Section */}
-        <div className="mt-8 w-3/4 mx-auto ">
+        <div className="mt-8 w-1/4 ">
           <h2 className="text-2xl font-bold mb-4">Book a Table</h2>
           <form className="space-y-4">
-            <select className="w-full p-2 border rounded-xl">
-              <option>Choose date</option>
-            </select>
+            <DateTimePicker />
+
             <select className="w-full p-2 border rounded-xl">
               <option>Choose time</option>
             </select>

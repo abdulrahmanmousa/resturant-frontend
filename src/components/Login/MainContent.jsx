@@ -1,15 +1,57 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 export default function MainContent() {
+  // iOS-like smooth animation variants
+  const pageVariants = {
+    initial: {
+      opacity: 0,
+      y: 20,
+    },
+    animate: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: [0.23, 1, 0.32, 1], // iOS easing curve
+      },
+    },
+  };
+
+  const contentVariants = {
+    initial: {
+      opacity: 0,
+      y: 10,
+    },
+    animate: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.1,
+        ease: [0.23, 1, 0.32, 1],
+      },
+    },
+  };
+
   return (
-    <div className="flex justify-center items-center  bg-white">
+    <motion.div
+      className="flex justify-center items-center bg-white"
+      initial="initial"
+      animate="animate"
+      variants={pageVariants}
+    >
       <div className="w-[400px] p-6">
         {/* Heading */}
-        <h1 className="text-2xl font-bold mb-6 text-gray-900">Welcome back!</h1>
+        <motion.h1
+          className="text-2xl font-bold mb-6 text-gray-900"
+          variants={contentVariants}
+        >
+          Welcome back!
+        </motion.h1>
 
         {/* Email Field */}
-        <div className="mb-4">
+        <motion.div className="mb-4" variants={contentVariants}>
           <label
             htmlFor="email"
             className="block text-sm font-medium text-gray-700"
@@ -20,12 +62,12 @@ export default function MainContent() {
             type="email"
             id="email"
             placeholder="Email"
-            className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+            className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
           />
-        </div>
+        </motion.div>
 
         {/* Password Field */}
-        <div className="mb-2">
+        <motion.div className="mb-2" variants={contentVariants}>
           <label
             htmlFor="password"
             className="block text-sm font-medium text-gray-700"
@@ -36,47 +78,73 @@ export default function MainContent() {
             type="password"
             id="password"
             placeholder="Password"
-            className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+            className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
           />
-        </div>
+        </motion.div>
 
         {/* Forgot Password */}
-        <div className="text-right mb-6">
-          <a href="#" className="text-sm text-gray-500 hover:underline">
+        <motion.div className="text-right mb-6" variants={contentVariants}>
+          <a
+            href="#"
+            className="text-sm text-gray-500 hover:underline transition-all duration-200"
+          >
             Forgot password?
           </a>
-        </div>
+        </motion.div>
 
         {/* Log In Button */}
-        <button className="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition">
+        <motion.button
+          className="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-all duration-200"
+          variants={contentVariants}
+          whileTap={{ scale: 0.98 }}
+        >
           Log in
-        </button>
+        </motion.button>
 
         {/* Divider */}
-        <div className="text-center my-4 text-sm text-gray-500">
+        <motion.div
+          className="text-center my-4 text-sm text-gray-500"
+          variants={contentVariants}
+        >
           Don't have an account?
-        </div>
+        </motion.div>
 
         {/* Create Account Button */}
         <Link to="/register">
-          <button className="w-full bg-gray-200 text-gray-800 font-semibold py-2 rounded-md hover:bg-gray-300 transition">
+          <motion.button
+            className="w-full bg-gray-200 text-gray-800 font-semibold py-2 rounded-md hover:bg-gray-300 transition-all duration-200"
+            variants={contentVariants}
+            whileTap={{ scale: 0.98 }}
+          >
             Create an account
-          </button>
+          </motion.button>
         </Link>
 
         {/* Continue with Options */}
-        <div className="text-center mt-6 text-gray-500 text-sm">
+        <motion.div
+          className="text-center mt-6 text-gray-500 text-sm"
+          variants={contentVariants}
+        >
           Or continue with
-        </div>
-        <div className="flex justify-center mt-4 gap-4">
-          <button className="px-6 py-2 border rounded-md text-gray-700 hover:bg-gray-100">
+        </motion.div>
+        <motion.div
+          className="flex justify-center mt-4 gap-4"
+          variants={contentVariants}
+        >
+          <motion.button
+            className="px-6 py-2 border rounded-md text-gray-700 hover:bg-gray-100 transition-all duration-200"
+            whileTap={{ scale: 0.98 }}
+          >
             Google
-          </button>
-          <button className="px-6 py-2 border rounded-md text-gray-700 hover:bg-gray-100">
+          </motion.button>
+          <motion.button
+            className="px-6 py-2 border rounded-md text-gray-700 hover:bg-gray-100 transition-all duration-200"
+            whileTap={{ scale: 0.98 }}
+          >
             Apple
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }
