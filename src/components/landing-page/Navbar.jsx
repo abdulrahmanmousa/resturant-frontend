@@ -11,7 +11,7 @@ export default function Navbar() {
     { name: "Offers", url: "/offers" },
   ];
   return (
-    <div className="sticky top-0 z-[999] bg-white">
+    <div className="sticky top-0 z-[20] bg-white">
       <div className="flex px-10 gap-9 border-b py-4">
         <div className="flex items-center space-x-4">
           <img src={Logo} alt="page logo" className="w-8 h-8" />

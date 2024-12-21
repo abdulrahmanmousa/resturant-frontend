@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import * as React from "react";
 
 import {
@@ -57,28 +58,37 @@ export default function FeaturedDishes() {
       <Carousel className="w-3/4 m-auto">
         <CarouselContent className="flex gap-4">
           {dishes.map((dish, index) => (
-            <CarouselItem key={index} className="basis-1/5">
-              <Card className="shadow-lg hover:scale-105 transition-transform">
-                <img
-                  src={dish.image}
-                  alt={dish.name}
-                  className="w-full h-[140px] object-cover rounded-t-md"
-                />
-                <CardHeader>
-                  <CardTitle>{dish.name}</CardTitle>
-                  <CardDescription>{dish.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600 text-center">
-                    Discover the flavors of {dish.name}.
-                  </p>
-                </CardContent>
-              </Card>
-            </CarouselItem>
+            <Link
+              to={{
+                pathname: `/dishs/${dish.id}`,
+                state: { dish },
+              }}
+              key={index}
+            >
+              {" "}
+              <CarouselItem
+                key={index}
+                className="basis-1/5 border-none shadow-none"
+              >
+                <Card className="w-full  hover:bg-gray-200 transition-all border-none shadow-none ">
+                  <img
+                    src={dish.image}
+                    alt={dish.name}
+                    className="w-full h-[160px] object-cover p-2 rounded-3xl"
+                  />
+                  <CardHeader className="px-4 py-2">
+                    <CardTitle>{dish.name}</CardTitle>
+                    <CardDescription>
+                      <p className="text-sm text-gray-600 text-center">
+                        Experience world-class dining.
+                      </p>
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              </CarouselItem>
+            </Link>
           ))}
         </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
       </Carousel>
     </div>
   );

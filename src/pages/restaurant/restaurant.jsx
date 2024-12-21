@@ -3,6 +3,14 @@ import Layout from "../../components/layout/layout";
 import { useParams } from "react-router-dom";
 import { Phone, Clock, UtensilsCrossed } from "lucide-react";
 import DateTimePicker from "../../components/DateTimePicker";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../components/ui/select";
+import ImagesModal from "../../components/modals/PreviewImagesModal";
 
 export default function Restaurant() {
   const { id } = useParams();
@@ -54,6 +62,16 @@ export default function Restaurant() {
           price: "$28",
           image: "https://picsum.photos/800?random=4",
         },
+        {
+          name: "Another Mignon",
+          price: "$28",
+          image: "https://picsum.photos/800?random=5",
+        },
+        {
+          name: "Hot Mignon",
+          price: "$28",
+          image: "https://picsum.photos/800?random=6",
+        },
       ],
     },
     {
@@ -61,7 +79,8 @@ export default function Restaurant() {
       name: "The House",
       rating: "4.3",
       reviews: "980",
-      image: "https://images.unsplash.com/photo-1552566626-52b6e06c0211",
+      image:
+        "https://www.shutterstock.com/image-photo/fried-salmon-steak-cooked-green-600nw-2489026949.jpg",
       phone: "(415) 987-6543",
       address: "456 Oak Street, San Francisco, CA",
       hours: "Mon-Fri: 12:00 PM - 10:00 PM",
@@ -88,7 +107,8 @@ export default function Restaurant() {
       name: "Gary Danko",
       rating: "4.8",
       reviews: "2,100",
-      image: "https://images.unsplash.com/photo-1541557435989-1b96273494f6",
+      image:
+        "https://images.immediate.co.uk/production/volatile/sites/30/2022/08/Corndogs-7832ef6.jpg?quality=90&resize=556,505",
       phone: "(415) 765-4321",
       address: "789 Pine Street, San Francisco, CA",
       hours: "Tue-Sun: 5:00 PM - 11:00 PM",
@@ -115,7 +135,8 @@ export default function Restaurant() {
       name: "Zuni Cafe",
       rating: "4.6",
       reviews: "1,450",
-      image: "https://images.unsplash.com/photo-1600891963836-6dc70f4c14f9",
+      image:
+        "https://cdn.britannica.com/98/235798-050-3C3BA15D/Hamburger-and-french-fries-paper-box.jpg",
       phone: "(415) 222-3333",
       address: "101 Market Street, San Francisco, CA",
       hours: "Everyday: 11:00 AM - 10:00 PM",
@@ -172,18 +193,9 @@ export default function Restaurant() {
         </div>
 
         <div className="bg-white space-y-8">
-          {/* Images Row */}
-          <div className="grid grid-cols-4 gap-4 ">
-            {restaurant.menu.map((item, index) => (
-              <img
-                key={index}
-                src={item.image}
-                alt={item.name}
-                className="rounded-xl object-cover aspect-square w-full "
-              />
-            ))}
-          </div>
-
+          <ImagesModal
+            attachments={restaurant.menu.map((item) => item.image)}
+          />
           {/* Contact Information */}
           <div className="grid grid-rows-2 gap-6 m-6">
             <div className="flex items-center space-x-3">
@@ -213,7 +225,7 @@ export default function Restaurant() {
           {restaurant.menu.map((item, index) => (
             <div
               key={index}
-              className="flex items-center space-x-4 border p-4 rounded-md shadow-sm"
+              className="flex items-center space-x-4 border p-4 rounded-xl shadow-sm"
             >
               <img
                 src={item.image}
@@ -261,14 +273,14 @@ export default function Restaurant() {
           </div>
         </div>
         {/* taple Availability */}
-        <div className="mt-8 mb-8  w-3/4 w-full relative gap-2  ">
-          <h1 className=" text-4xl font-bold mb-6 text-center text-gray-800">
+        <div className="  w-3/4 w-full relative gap-2  ">
+          <h1 className=" text-4xl font-bold  text-center text-gray-800">
             Table Availability
           </h1>
           <img
             src="https://i.pinimg.com/736x/3d/5b/a8/3d5ba8dbfc44cb0289960774e742c38e.jpg"
             alt="table"
-            className="max-w-[70vw] mx-auto object-cover rounded-3xl overflow-hidden rotate-90 max-h-[50vh] "
+            className="max-w-[70vw] mx-auto object-cover rounded-3xl overflow-hidden rotate-90 max-h-[60vh] "
           />
           <div className="grid  gap-3  ">
             <div className="grid gap-3">
@@ -276,22 +288,13 @@ export default function Restaurant() {
                 {tables.map((table) => (
                   <div
                     key={table.id}
-                    className="bg-gray-200 flex flex-col items-center justify-center p-4 rounded-md shadow-md"
+                    className="flex flex-row items-start justify-start gap-4 p-4 rounded-xl border shadow-sm"
                   >
                     <UtensilsCrossed />
-                    <h1 className="font-bold mt-2">{table.name}</h1>
-                    <p className="text-sm">Capacity: {table.capacity}</p>
-                    <p
-                      className={`text-xs mt-1 ${
-                        table.status === "Available"
-                          ? "text-green-600"
-                          : table.status === "Reserved"
-                            ? "text-yellow-600"
-                            : "text-red-600"
-                      }`}
-                    >
-                      Status: {table.status}
-                    </p>
+                    <div className="flex flex-col ">
+                      <h1 className="font-bold ">{table.name}</h1>
+                      <p className="text-sm">Capacity: {table.capacity}</p>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -301,17 +304,23 @@ export default function Restaurant() {
           </div>
         </div>
         {/* Table Booking Section */}
-        <div className="mt-8 w-1/4 ">
+        <div className="mt-8 w-2/4 mx-auto ">
           <h2 className="text-2xl font-bold mb-4">Book a Table</h2>
           <form className="space-y-4">
             <DateTimePicker />
-
-            <select className="w-full p-2 border rounded-xl">
-              <option>Choose time</option>
-            </select>
-            <select className="w-full p-2 border rounded-xl">
-              <option>Choose guest count</option>
-            </select>
+            <Select>
+              <SelectTrigger>
+                <SelectValue placeholder="Choose guest count" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">1</SelectItem>
+                <SelectItem value="2">2</SelectItem>
+                <SelectItem value="3">3</SelectItem>
+                <SelectItem value="4">4</SelectItem>
+                <SelectItem value="5">5</SelectItem>
+                <SelectItem value="6">6</SelectItem>
+              </SelectContent>
+            </Select>
             <button className="w-full bg-red-500 text-white py-2 rounded-xl hover:bg-red-600">
               Find a Table
             </button>
