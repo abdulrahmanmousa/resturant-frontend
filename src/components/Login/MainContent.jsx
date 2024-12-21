@@ -42,9 +42,11 @@ export default function MainContent() {
 
         {/* Forgot Password */}
         <div className="text-right mb-6">
-          <a href="#" className="text-sm text-gray-500 hover:underline">
-            Forgot password?
-          </a>
+          <Link to="/forgot_password">
+            <a href="#" className="text-sm text-gray-500 hover:underline">
+              Forgot password?
+            </a>
+          </Link>
         </div>
 
         {/* Log In Button */}
