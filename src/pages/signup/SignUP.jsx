@@ -2,9 +2,32 @@ import React from "react";
 import Layout from "../../components/layout/layout";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { use } from "react";
+import { useState, useEffect } from "react";
+import api from "../../lib/apiInstance";
 
 export default function SignUp() {
-  // iOS-like subtle animation variants
+  const [data, setData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    role: "",
+  });
+  useEffect(() => {}, []);
+  const handelname = (e) => setData({ ...data, name: e.target.value });
+  const handelemail = (e) => setData({ ...data, email: e.target.value });
+  const handelpassword = (e) => setData({ ...data, password: e.target.value });
+  const onsubmit = () => {
+    api
+      .post("users/signup", data)
+      .then((response) => {
+        console.log("Success:", response.data);
+      })
+      .catch((error) => {
+        console.error("Error:", error.response?.data || error.message);
+      });
+    console.log(data);
+  }; // iOS-like subtle animation variants
   const pageVariants = {
     initial: {
       opacity: 0,
@@ -67,6 +90,7 @@ export default function SignUp() {
               <input
                 type="text"
                 id="firstName"
+                onChange={handelname}
                 placeholder="Name"
                 className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
               />
@@ -97,6 +121,7 @@ export default function SignUp() {
             </label>
             <input
               type="email"
+              onChange={handelemail}
               id="email"
               placeholder="Email"
               className="mt-1 block w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
@@ -134,6 +159,7 @@ export default function SignUp() {
                 </label>
                 <input
                   type="password"
+                  onChange={handelpassword}
                   id="password"
                   placeholder="Password"
                   className="mt-1 block w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
@@ -160,6 +186,7 @@ export default function SignUp() {
           <motion.button
             className="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-all duration-200"
             variants={formVariants}
+            onClick={onsubmit}
             whileTap={{ scale: 0.98 }}
           >
             Sign Up

@@ -1,8 +1,28 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 
+import api from "../../lib/apiInstance";
+import { Form } from "react-hook-form";
 export default function MainContent() {
+  const [data, setData] = useState({
+    email: "",
+    password: "",
+  });
+  useEffect(() => {}, []);
+  const onsubmit = () => {
+    api
+      .post("/users/signin", data)
+      .then((response) => {
+        console.log("Success:", response.data);
+      })
+      .catch((error) => {
+        console.error("Error:", error.response?.data || error.message);
+      });
+    console.log(data);
+  };
+
   // iOS-like smooth animation variants
   const pageVariants = {
     initial: {
@@ -34,6 +54,9 @@ export default function MainContent() {
     },
   };
 
+  const handleEmail = (e) => setData({ ...data, email: e.target.value });
+  const handlepassword = (e) => setData({ ...data, password: e.target.value });
+
   return (
     <motion.div
       className="flex justify-center items-center bg-white"
@@ -50,52 +73,65 @@ export default function MainContent() {
           Welcome back!
         </motion.h1>
         {/* Email Field */}
-        <motion.div className="mb-4" variants={contentVariants}>
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            placeholder="Email"
-            className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
-          />
-        </motion.div>
-        {/* Password Field */}
-        <motion.div className="mb-2" variants={contentVariants}>
-          <label
-            htmlFor="password"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            placeholder="Password"
-            className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
-          />
-        </motion.div>
-        {/* Forgot Password */}
-        <motion.div className="text-right mb-6" variants={contentVariants}>
-          <Link
-            to="/forgot_password"
-            className="text-sm text-gray-500 hover:underline transition-all duration-200"
-          >
-            Forgot password?
-          </Link>
-        </motion.div>
-        {/* Log In Button */}
-        <motion.button
-          className="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-all duration-200"
-          variants={contentVariants}
-          whileTap={{ scale: 0.98 }}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            onsubmit();
+          }}
         >
-          Log in
-        </motion.button>
+          {" "}
+          <motion.div className="mb-4" variants={contentVariants}>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Email
+            </label>
+            <input
+              type="email"
+              onChange={handleEmail}
+              id="email"
+              placeholder="Email"
+              className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
+            />
+          </motion.div>
+          {/* Password Field */}
+          <motion.div className="mb-2" variants={contentVariants}>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              placeholder="Password"
+              onChange={handlepassword}
+              className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
+            />
+          </motion.div>
+          {/* Forgot Password */}
+          <motion.div className="text-right mb-6" variants={contentVariants}>
+            <Link
+              to="/forgot_password"
+              className="text-sm text-gray-500 hover:underline transition-all duration-200"
+            >
+              Forgot password?
+            </Link>
+          </motion.div>
+          {/* Log In Button */}
+          <motion.button
+            className="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-all duration-200"
+            variants={contentVariants}
+            onClick={(e) => {
+              e.preventDefault(), onsubmit();
+            }}
+            whileTap={{ scale: 0.98 }}
+          >
+            Log in
+          </motion.button>
+        </form>
         {/* Divider */}
         <motion.div
           className="text-center my-4 text-sm text-gray-500"
