@@ -6,6 +6,7 @@ import Restaurants from "./pages/restaurants/restaurants";
 import Restaurant from "./pages/restaurant/restaurant";
 import SingUp from "./pages/signup/SignUP";
 import ForgetPassword from "./pages/forgetpassword/ForgetPassword";
+import UpdatePassword from "./pages/updatepassowrd/UpdatePassword";
 function App() {
   return (
     <HashRouter>
@@ -14,10 +15,10 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<SingUp />} />
-
         <Route path="/restaurants" element={<Restaurants />} />
         <Route path="/restaurants/:id" element={<Restaurant />} />
         <Route path="/forgot_password" element={<ForgetPassword />} />
+        <Route path="/update_password" element={<UpdatePassword />} />
       </Routes>
     </HashRouter>
   );

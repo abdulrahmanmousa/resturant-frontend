@@ -1,10 +1,10 @@
 import React from "react";
 import Layout from "../../components/layout/layout";
-
+import { Link } from "react-router-dom";
 export default function ForgetPassword() {
   return (
     <Layout>
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="min-h-screen flex items-center justify-center ">
         <div className="w-full max-w-md p-8 space-y-4 bg-white rounded-lg shadow-md">
           <h2 className="text-2xl font-bold text-center text-gray-800">
             Forgot Password?
@@ -28,17 +28,18 @@ export default function ForgetPassword() {
                 required
               />
             </div>
-            <button
-              type="submit"
-              className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+
+            <Link
+              to="/update_password"
+              className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 text-center block"
             >
               Send Reset Link
-            </button>
+            </Link>
           </form>
           <div className="text-center text-gray-600 mt-4">
-            <a href="/login" className="text-red-500 hover:underline">
+            <Link to="/login" className="text-red-500 hover:underline">
               Back to Login
-            </a>
+            </Link>
           </div>
         </div>
       </div>
