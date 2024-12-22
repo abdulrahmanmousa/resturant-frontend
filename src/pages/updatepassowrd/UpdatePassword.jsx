@@ -5,7 +5,7 @@ export default function UpdatePassword() {
   return (
     <div>
       <Layout>
-        <div className="min-h-screen flex items-center justify-center ">
+        <div className="h-[50vh] flex items-center justify-center ">
           <div className="w-full max-w-md p-8 space-y-4 bg-white rounded-lg shadow-md">
             <h2 className="text-2xl font-bold text-center text-gray-800">
               Change Password
