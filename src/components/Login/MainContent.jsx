@@ -82,12 +82,12 @@ export default function MainContent() {
         {/* Forgot Password */}
         =======
         <motion.div className="text-right mb-6" variants={contentVariants}>
-          <a
-            href="#"
+          <Link
+            to="/forgot_password"
             className="text-sm text-gray-500 hover:underline transition-all duration-200"
           >
             Forgot password?
-          </a>
+          </Link>
         </motion.div>
         {/* Log In Button */}
         <motion.button

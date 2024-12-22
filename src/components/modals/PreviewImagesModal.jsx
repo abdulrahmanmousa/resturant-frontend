@@ -28,7 +28,7 @@ const ImagesModal = ({ attachments }) => {
     activePreviewAttachments,
     activeIndexPreviewAttachments,
     "hello",
-    attachments,
+    attachments
   );
 
   return (
@@ -58,7 +58,9 @@ const ImagesModal = ({ attachments }) => {
                 className="relative  rounded-xl overflow-hidden"
               >
                 <div
-                  className={`absolute w-full h-full rounded-[10px] top-0 left-0  hover:bg-black/70  transition-all ${index === 4 && attachments.length > 5 && "bg-black/60 "}`}
+                  className={`absolute w-full h-full rounded-[10px] top-0 left-0  hover:bg-black/70  transition-all ${
+                    index === 4 && attachments.length > 5 && "bg-black/60 "
+                  }`}
                 />
                 {index === 4 && attachments.length > 5 && (
                   <>
@@ -94,13 +96,13 @@ const AttachmentPreview = ({ attachment, isBlurred = false }) => {
 function AttachmentsPreview({ attachments, currentIndex, setCurrentIndex }) {
   const goToPrevious = () => {
     setCurrentIndex(
-      currentIndex > 0 ? currentIndex - 1 : attachments.length - 1,
+      currentIndex > 0 ? currentIndex - 1 : attachments.length - 1
     );
   };
 
   const goToNext = () => {
     setCurrentIndex(
-      currentIndex < attachments.length - 1 ? currentIndex + 1 : 0,
+      currentIndex < attachments.length - 1 ? currentIndex + 1 : 0
     );
   };
 
