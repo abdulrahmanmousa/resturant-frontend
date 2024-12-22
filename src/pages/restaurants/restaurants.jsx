@@ -9,6 +9,52 @@ import {
   Umbrella,
   UtensilsCrossed,
 } from "lucide-react";
+import { motion } from "framer-motion";
+
+const containerVariants = {
+  initial: { opacity: 0 },
+  animate: {
+    opacity: 1,
+    transition: {
+      duration: 0.4,
+      ease: [0.23, 1, 0.32, 1],
+    },
+  },
+};
+
+const filterButtonVariants = {
+  initial: { opacity: 0, x: -20 },
+  animate: (i) => ({
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.2,
+      ease: [0.23, 1, 0.32, 1],
+      delay: i * 0.1,
+    },
+  }),
+};
+
+const listItemVariants = {
+  initial: { opacity: 0, y: 20 },
+  animate: (i) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: [0.23, 1, 0.32, 1],
+      delay: i * 0.1,
+    },
+  }),
+};
+const filterButtons = [
+  { icon: Clock, text: "Open Now" },
+  { icon: Umbrella, text: "Outdoor Seating" },
+  { icon: UtensilsCrossed, text: "Cuisine Type" },
+  { icon: Star, text: "Rating" },
+  { icon: DollarSign, text: "Price" },
+  { icon: ArrowUpDown, text: "Sort By" },
+];
 
 // Sample restaurant data
 const restaurants = [
@@ -130,49 +176,56 @@ const restaurants = [
 export default function Restaurants() {
   return (
     <Layout>
-      <div className="bg-white min-h-screen px-8 py-4  m-auto justify-center items-center w-3/4">
+      <motion.div
+        className="bg-white min-h-screen px-8 py-4 m-auto justify-center items-center w-3/4"
+        variants={containerVariants}
+        initial="initial"
+        animate="animate"
+      >
         {/* Filters */}
-        <div className="flex space-x-4 mb-6">
-          <button className="flex items-center space-x-2 px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200">
-            <Clock size={18} />
-            <span>Open Now</span>
-          </button>
-          <button className="flex items-center space-x-2 px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200">
-            <Umbrella size={18} />
-            <span>Outdoor Seating</span>
-          </button>
-          <button className="flex items-center space-x-2 px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200">
-            <UtensilsCrossed size={18} />
-            <span>Cuisine Type</span>
-          </button>
-          <button className="flex items-center space-x-2 px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200">
-            <Star size={18} />
-            <span>Rating</span>
-          </button>
-          <button className="flex items-center space-x-2 px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200">
-            <DollarSign size={18} />
-            <span>Price</span>
-          </button>
-          <button className="flex items-center space-x-2 px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200">
-            <ArrowUpDown size={18} />
-            <span>Sort By</span>
-          </button>
+        <div className="flex space-x-4 mb-6 overflow-x-auto pb-2">
+          {filterButtons.map((button, index) => (
+            <motion.button
+              key={button.text}
+              className="flex items-center space-x-2 px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-200"
+              variants={filterButtonVariants}
+              custom={index}
+              whileTap={{ scale: 0.97 }}
+            >
+              <button.icon size={18} />
+              <span>{button.text}</span>
+            </motion.button>
+          ))}
         </div>
 
         {/* Restaurant List */}
-        <h2 className="text-xl font-bold mb-4">All restaurants</h2>
+        <motion.h2
+          className="text-xl font-bold mb-4"
+          variants={filterButtonVariants}
+        >
+          All restaurants
+        </motion.h2>
         <div className="space-y-4">
-          {restaurants.map((restaurant) => (
-            <Link to={`/restaurants/${restaurant.id}`}>
-              <div
-                key={restaurant.id}
-                className="flex items-center justify-between p-4  rounded hover:shadow-md transition"
+          {restaurants.map((restaurant, index) => (
+            <Link to={`/restaurants/${restaurant.id}`} key={restaurant.id}>
+              <motion.div
+                className="flex items-center justify-between p-4 rounded hover:shadow-md transition-all duration-200"
+                variants={listItemVariants}
+                custom={index}
+                whileHover={{
+                  scale: 1.02,
+                  transition: { duration: 0.2, ease: [0.23, 1, 0.32, 1] },
+                }}
+                whileTap={{ scale: 0.98 }}
               >
                 <div className="flex items-center space-x-4">
-                  <img
+                  <motion.img
                     src={restaurant.image}
                     alt={restaurant.name}
-                    className="w-12 h-12 rounded"
+                    className="w-12 h-12 rounded object-cover"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
                   />
                   <div>
                     <h3 className="text-lg font-bold">{restaurant.name}</h3>
@@ -181,14 +234,17 @@ export default function Restaurants() {
                     </p>
                   </div>
                 </div>
-                <div>
+                <motion.div
+                  whileHover={{ x: 5 }}
+                  transition={{ duration: 0.2 }}
+                >
                   <span className="text-gray-400 text-xl">›</span>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
             </Link>
           ))}
         </div>
-      </div>
+      </motion.div>
     </Layout>
   );
 }

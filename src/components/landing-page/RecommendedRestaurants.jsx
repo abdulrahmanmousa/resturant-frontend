@@ -31,22 +31,32 @@ export function Recommended_res() {
         {
           name: "Spinach Dip",
           price: "$12",
-          image: "https://via.placeholder.com/50",
+          image: "https://picsum.photos/800?random=1",
         },
         {
           name: "Caesar Salad",
           price: "$18",
-          image: "https://via.placeholder.com/50",
+          image: "https://picsum.photos/800?random=2",
         },
         {
           name: "Grilled Salmon",
           price: "$24",
-          image: "https://via.placeholder.com/50",
+          image: "https://picsum.photos/800?random=3",
         },
         {
           name: "Filet Mignon",
           price: "$28",
-          image: "https://via.placeholder.com/50",
+          image: "https://picsum.photos/800?random=4",
+        },
+        {
+          name: "Another Mignon",
+          price: "$28",
+          image: "https://picsum.photos/800?random=5",
+        },
+        {
+          name: "Hot Mignon",
+          price: "$28",
+          image: "https://picsum.photos/800?random=6",
         },
       ],
     },
@@ -55,7 +65,8 @@ export function Recommended_res() {
       name: "The House",
       rating: "4.3",
       reviews: "980",
-      image: "https://images.unsplash.com/photo-1552566626-52b6e06c0211",
+      image:
+        "https://www.shutterstock.com/image-photo/fried-salmon-steak-cooked-green-600nw-2489026949.jpg",
       phone: "(415) 987-6543",
       address: "456 Oak Street, San Francisco, CA",
       hours: "Mon-Fri: 12:00 PM - 10:00 PM",
@@ -82,7 +93,8 @@ export function Recommended_res() {
       name: "Gary Danko",
       rating: "4.8",
       reviews: "2,100",
-      image: "https://images.unsplash.com/photo-1541557435989-1b96273494f6",
+      image:
+        "https://images.immediate.co.uk/production/volatile/sites/30/2022/08/Corndogs-7832ef6.jpg?quality=90&resize=556,505",
       phone: "(415) 765-4321",
       address: "789 Pine Street, San Francisco, CA",
       hours: "Tue-Sun: 5:00 PM - 11:00 PM",
@@ -109,7 +121,8 @@ export function Recommended_res() {
       name: "Zuni Cafe",
       rating: "4.6",
       reviews: "1,450",
-      image: "https://images.unsplash.com/photo-1600891963836-6dc70f4c14f9",
+      image:
+        "https://cdn.britannica.com/98/235798-050-3C3BA15D/Hamburger-and-french-fries-paper-box.jpg",
       phone: "(415) 222-3333",
       address: "101 Market Street, San Francisco, CA",
       hours: "Everyday: 11:00 AM - 10:00 PM",
