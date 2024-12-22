@@ -80,7 +80,6 @@ export default function MainContent() {
           />
         </motion.div>
         {/* Forgot Password */}
-        =======
         <motion.div className="text-right mb-6" variants={contentVariants}>
           <Link
             to="/forgot_password"
