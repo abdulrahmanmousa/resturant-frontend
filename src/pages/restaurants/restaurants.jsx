@@ -7,9 +7,12 @@ import {
   DollarSign,
   Star,
   Umbrella,
+  UserSquare,
   UtensilsCrossed,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import api from "../../lib/apiInstance";
 
 const containerVariants = {
   initial: { opacity: 0 },
@@ -174,6 +177,13 @@ const restaurants = [
 ];
 
 export default function Restaurants() {
+  const { data, isPending } = useQuery({
+    queryFn: () => api.get("/restaurants"),
+    queryKey: ["restaurants"],
+  });
+
+  console.log(data);
+
   return (
     <Layout>
       <motion.div
