@@ -5,20 +5,30 @@ import { useState, useEffect } from "react";
 
 import api from "../../lib/apiInstance";
 import { Form } from "react-hook-form";
+import { toast } from "sonner";
 export default function MainContent() {
   const [data, setData] = useState({
     email: "",
     password: "",
   });
-  useEffect(() => {}, []);
+  const [loading, setLoading] = useState(false);
+
   const onsubmit = () => {
+    if (!data.email || !data.password) return;
+    setLoading(true);
     api
       .post("/users/signin", data)
       .then((response) => {
         console.log("Success:", response.data);
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
       })
       .catch((error) => {
         console.error("Error:", error.response?.data || error.message);
+        toast.error(error.response?.data?.err_msg || error.message);
+      })
+      .finally(() => {
+        setLoading(false);
       });
     console.log(data);
   };
@@ -127,9 +137,10 @@ export default function MainContent() {
             onClick={(e) => {
               e.preventDefault(), onsubmit();
             }}
+            disabled={loading}
             whileTap={{ scale: 0.98 }}
           >
-            Log in
+            {loading ? "Loading..." : "Log in"}
           </motion.button>
         </form>
         {/* Divider */}
