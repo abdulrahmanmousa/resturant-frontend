@@ -9,6 +9,7 @@ import ForgetPassword from "./pages/forgetpassword/ForgetPassword";
 import UpdatePassword from "./pages/updatepassowrd/UpdatePassword";
 import { Toaster } from "sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Profile from "./pages/profile/Profile";
 function App() {
   const queryClient = new QueryClient();
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/restaurants/:id" element={<Restaurant />} />
           <Route path="/forgot_password" element={<ForgetPassword />} />
           <Route path="/update_password" element={<UpdatePassword />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
         <Toaster />
       </QueryClientProvider>
