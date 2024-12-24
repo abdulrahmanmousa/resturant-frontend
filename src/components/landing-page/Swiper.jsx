@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import Img1 from "../../assets/c1.png";
@@ -7,6 +8,7 @@ import Img4 from "../../assets/c4.png";
 
 export default function Swiper() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [search, setSearch] = useState("");
   const totalSlides = 4;
 
   useEffect(() => {
@@ -16,6 +18,11 @@ export default function Swiper() {
 
     return () => clearInterval(interval);
   }, [totalSlides]);
+
+  const navigate = useNavigate();
+  const onFindTable = () => {
+    navigate(`/explore?q=${search}`);
+  };
 
   return (
     <div className="relative flex m-auto justify-center items-center w-3/4 overflow-hidden rounded-2xl max-h-[60vh]">
@@ -33,12 +40,18 @@ export default function Swiper() {
             <div className="flex items-center pl-4 flex-grow h-[66px] ">
               <Search className="w-4 h-4 text-gray-400" />
               <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && onFindTable()}
                 type="text"
                 placeholder="Search for restaurants"
                 className="w-full px-3 py-2 bg-transparent outline-none text-gray-700 placeholder-gray-500"
               />
             </div>
-            <button className="px-6 py-2 bg-red-500 text-white h-[52px] rounded-2xl hover:bg-red-600 transition-colors m-1">
+            <button
+              onClick={onFindTable}
+              className="px-6 py-2 bg-red-500 text-white h-[52px] rounded-2xl hover:bg-red-600 transition-colors m-1"
+            >
               Find a table
             </button>
           </div>
