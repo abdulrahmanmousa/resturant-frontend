@@ -10,6 +10,7 @@ import UpdatePassword from "./pages/updatepassowrd/UpdatePassword";
 import { Toaster } from "sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Explore from "./pages/explore/explore.jsx";
+import Profile from "./pages/profile/Profile.jsx";
 function App() {
   const queryClient = new QueryClient();
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path="/forgot_password" element={<ForgetPassword />} />
           <Route path="/update_password" element={<UpdatePassword />} />
           <Route path="/explore" element={<Explore />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
         <Toaster />
       </QueryClientProvider>
