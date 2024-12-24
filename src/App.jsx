@@ -9,7 +9,6 @@ import ForgetPassword from "./pages/forgetpassword/ForgetPassword";
 import UpdatePassword from "./pages/updatepassowrd/UpdatePassword";
 import { Toaster } from "sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Profile from "./pages/profile/Profile";
 import Explore from "./pages/explore/explore.jsx";
 import Profile from "./pages/profile/Profile.jsx";
 function App() {
