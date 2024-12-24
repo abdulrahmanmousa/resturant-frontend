@@ -6,7 +6,7 @@ import { use } from "react";
 import { useState, useEffect } from "react";
 import api from "../../lib/apiInstance";
 
-export default function SignUp() {
+export default function Profile() {
   const [preview, setPreview] = useState(null); // To store the image preview URL
 
   const [data, setData] = useState({
@@ -207,7 +207,7 @@ export default function SignUp() {
           {/* Password Fields */}
           <motion.div className="mt-5 mb-2" variants={formVariants}>
             <label className="block text-lg font-medium text-gray-700">
-              Password
+              Update Password
             </label>
             <div className="grid mt-5 gap-3 grid-cols-2">
               <div className="mb-4">
@@ -215,13 +215,28 @@ export default function SignUp() {
                   htmlFor="password"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Password
+                  Current Password
                 </label>
                 <input
                   type="password"
                   onChange={handelpassword}
                   id="password"
-                  placeholder="Password"
+                  placeholder="Current Password"
+                  className="mt-1 block w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  New Password
+                </label>
+                <input
+                  type="password"
+                  onChange={handelpassword}
+                  id="password"
+                  placeholder="New Password"
                   className="mt-1 block w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
                 />
               </div>
@@ -230,27 +245,35 @@ export default function SignUp() {
                   htmlFor="confirmPassword"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Confirm Password
+                  Confirm New Password
                 </label>
                 <input
                   type="password"
                   id="confirmPassword"
-                  placeholder="Confirm Password"
+                  placeholder="Confirm New Password"
                   className="mt-1 block w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
                 />
               </div>
             </div>
+            <motion.button
+              className="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-all duration-200"
+              variants={formVariants}
+              onClick={onsubmit}
+              whileTap={{ scale: 0.98 }}
+            >
+              Update Password
+            </motion.button>
           </motion.div>
 
           {/* Sign Up Button */}
-          <motion.button
+          {/* <motion.button
             className="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-all duration-200"
             variants={formVariants}
             onClick={onsubmit}
             whileTap={{ scale: 0.98 }}
           >
             Sign Up
-          </motion.button>
+          </motion.button> */}
 
           {/* Login Link */}
           <motion.div
@@ -266,7 +289,7 @@ export default function SignUp() {
               variants={formVariants}
               whileTap={{ scale: 0.98 }}
             >
-              Login
+              Save Changes
             </motion.button>
           </Link>
 

@@ -1,17 +1,53 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 
 import api from "../../lib/apiInstance";
 import { Form } from "react-hook-form";
 import { toast } from "sonner";
+import useAuthStore from "../../store/auth-store";
+
+// iOS-like smooth animation variants
+const pageVariants = {
+  initial: {
+    opacity: 0,
+    y: 20,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: [0.23, 1, 0.32, 1], // iOS easing curve
+    },
+  },
+};
+
+const contentVariants = {
+  initial: {
+    opacity: 0,
+    y: 10,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.1,
+      ease: [0.23, 1, 0.32, 1],
+    },
+  },
+};
+
 export default function MainContent() {
   const [data, setData] = useState({
     email: "",
     password: "",
   });
   const [loading, setLoading] = useState(false);
+
+  const { setUser } = useAuthStore();
+  const navigate = useNavigate();
 
   const onsubmit = () => {
     if (!data.email || !data.password) return;
@@ -22,6 +58,8 @@ export default function MainContent() {
         console.log("Success:", response.data);
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("user", JSON.stringify(response.data.user));
+        setUser(response.data.user);
+        navigate("/");
       })
       .catch((error) => {
         console.error("Error:", error.response?.data || error.message);
@@ -31,37 +69,6 @@ export default function MainContent() {
         setLoading(false);
       });
     console.log(data);
-  };
-
-  // iOS-like smooth animation variants
-  const pageVariants = {
-    initial: {
-      opacity: 0,
-      y: 20,
-    },
-    animate: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: [0.23, 1, 0.32, 1], // iOS easing curve
-      },
-    },
-  };
-
-  const contentVariants = {
-    initial: {
-      opacity: 0,
-      y: 10,
-    },
-    animate: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.1,
-        ease: [0.23, 1, 0.32, 1],
-      },
-    },
   };
 
   const handleEmail = (e) => setData({ ...data, email: e.target.value });
