@@ -1,191 +1,216 @@
 import * as React from "react";
-
+import { useQuery } from "@tanstack/react-query";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 import {
   Card,
   CardHeader,
-  CardContent,
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
 import { Link } from "react-router-dom";
+import { Star } from "lucide-react";
+import api from ".././../lib/apiInstance";
+
+// Animation variants
+const containerVariants = {
+  initial: { opacity: 0 },
+  animate: {
+    opacity: 1,
+    transition: {
+      duration: 0.4,
+      ease: [0.23, 1, 0.32, 1],
+    },
+  },
+};
+
+const titleVariants = {
+  initial: { opacity: 0, y: -20 },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: [0.23, 1, 0.32, 1],
+    },
+  },
+};
+
+const listItemVariants = {
+  initial: { opacity: 0, y: 20 },
+  animate: (i) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: [0.23, 1, 0.32, 1],
+      delay: i * 0.1,
+    },
+  }),
+};
+
+// Shimmer Loading Component
+const ShimmerCard = ({ index }) => (
+  <motion.div
+    variants={listItemVariants}
+    initial="initial"
+    animate="animate"
+    custom={index}
+    className="basis-1/5 border-none shadow-none"
+  >
+    <div className="w-full animate-pulse">
+      <div className="w-full h-[160px] bg-gray-200 rounded-3xl" />
+      <div className="px-4 py-2">
+        <div className="h-5 bg-gray-200 rounded w-3/4 mb-2" />
+        <div className="h-4 bg-gray-200 rounded w-1/2" />
+      </div>
+    </div>
+  </motion.div>
+);
 
 export function Recommended_res() {
-  const restaurants = [
-    {
-      id: "1",
-      name: "Pizzeria Delfina",
-      rating: "4.5",
-      reviews: "1,234",
-      image: "https://images.unsplash.com/photo-1565299507177-b0ac66763828",
-      phone: "(415) 123-4567",
-      address: "123 Main Street, San Francisco, CA",
-      hours: "Mon-Sun: 11:30 AM - 9:30 PM",
-      menu: [
-        {
-          name: "Spinach Dip",
-          price: "$12",
-          image: "https://picsum.photos/800?random=1",
-        },
-        {
-          name: "Caesar Salad",
-          price: "$18",
-          image: "https://picsum.photos/800?random=2",
-        },
-        {
-          name: "Grilled Salmon",
-          price: "$24",
-          image: "https://picsum.photos/800?random=3",
-        },
-        {
-          name: "Filet Mignon",
-          price: "$28",
-          image: "https://picsum.photos/800?random=4",
-        },
-        {
-          name: "Another Mignon",
-          price: "$28",
-          image: "https://picsum.photos/800?random=5",
-        },
-        {
-          name: "Hot Mignon",
-          price: "$28",
-          image: "https://picsum.photos/800?random=6",
-        },
-      ],
-    },
-    {
-      id: "2",
-      name: "The House",
-      rating: "4.3",
-      reviews: "980",
-      image:
-        "https://www.shutterstock.com/image-photo/fried-salmon-steak-cooked-green-600nw-2489026949.jpg",
-      phone: "(415) 987-6543",
-      address: "456 Oak Street, San Francisco, CA",
-      hours: "Mon-Fri: 12:00 PM - 10:00 PM",
-      menu: [
-        {
-          name: "Bruschetta",
-          price: "$10",
-          image: "https://via.placeholder.com/50",
-        },
-        {
-          name: "Lobster Ravioli",
-          price: "$22",
-          image: "https://via.placeholder.com/50",
-        },
-        {
-          name: "Tiramisu",
-          price: "$8",
-          image: "https://via.placeholder.com/50",
-        },
-      ],
-    },
-    {
-      id: "3",
-      name: "Gary Danko",
-      rating: "4.8",
-      reviews: "2,100",
-      image:
-        "https://images.immediate.co.uk/production/volatile/sites/30/2022/08/Corndogs-7832ef6.jpg?quality=90&resize=556,505",
-      phone: "(415) 765-4321",
-      address: "789 Pine Street, San Francisco, CA",
-      hours: "Tue-Sun: 5:00 PM - 11:00 PM",
-      menu: [
-        {
-          name: "Foie Gras",
-          price: "$30",
-          image: "https://via.placeholder.com/50",
-        },
-        {
-          name: "Duck Confit",
-          price: "$28",
-          image: "https://via.placeholder.com/50",
-        },
-        {
-          name: "Chocolate Souffle",
-          price: "$15",
-          image: "https://via.placeholder.com/50",
-        },
-      ],
-    },
-    {
-      id: "4",
-      name: "Zuni Cafe",
-      rating: "4.6",
-      reviews: "1,450",
-      image:
-        "https://cdn.britannica.com/98/235798-050-3C3BA15D/Hamburger-and-french-fries-paper-box.jpg",
-      phone: "(415) 222-3333",
-      address: "101 Market Street, San Francisco, CA",
-      hours: "Everyday: 11:00 AM - 10:00 PM",
-      menu: [
-        {
-          name: "Wood-Fired Chicken",
-          price: "$26",
-          image: "https://via.placeholder.com/50",
-        },
-        {
-          name: "Oysters",
-          price: "$18",
-          image: "https://via.placeholder.com/50",
-        },
-        {
-          name: "Panna Cotta",
-          price: "$9",
-          image: "https://via.placeholder.com/50",
-        },
-      ],
-    },
-  ];
+  const { data, isLoading } = useQuery({
+    queryKey: ["restaurants"],
+    queryFn: () => api.get(`/restaurants?limit=10&sortBy=avgRating`),
+  });
+
+  const restaurants = data?.data?.data?.restaurants || [];
 
   return (
-    <div className="mt-14">
-      <h1 className=" text-4xl font-bold mb-6 text-center text-gray-800">
+    <motion.div
+      className="mt-14"
+      variants={containerVariants}
+      initial="initial"
+      animate="animate"
+    >
+      <motion.h1
+        variants={titleVariants}
+        className="text-4xl font-bold mb-6 text-center text-gray-800"
+      >
         Recommended Restaurants
-      </h1>
+      </motion.h1>
+
       <Carousel className="w-3/4 m-auto">
         <CarouselContent className="flex gap-4">
-          {restaurants.map((restaurant, index) => (
-            <Link
-              to={{
-                pathname: `/restaurants/${restaurant.id}`,
-                state: { restaurant },
-              }}
-              key={index}
-            >
-              {" "}
-              <CarouselItem
-                key={index}
-                className="basis-1/5 border-none shadow-none"
-              >
-                <Card className="w-full  hover:bg-gray-200 transition-all border-none shadow-none ">
-                  <img
-                    src={restaurant.image}
-                    alt={restaurant.name}
-                    className="w-full h-[160px] object-cover p-2 rounded-3xl"
-                  />
-                  <CardHeader className="px-4 py-2">
-                    <CardTitle>{restaurant.name}</CardTitle>
-                    <CardDescription>
-                      <p className="text-sm text-gray-600 text-center">
-                        Experience world-class dining.
-                      </p>
-                    </CardDescription>
-                  </CardHeader>
-                </Card>
-              </CarouselItem>
-            </Link>
-          ))}
+          <AnimatePresence mode="wait">
+            {isLoading
+              ? // Shimmer Loading
+                Array(5)
+                  .fill(0)
+                  .map((_, index) => <ShimmerCard key={index} index={index} />)
+              : restaurants.map((restaurant, index) => (
+                  <CarouselItem
+                    key={restaurant._id}
+                    className="basis-1/5 border-none shadow-none"
+                  >
+                    <Link to={`/restaurants/${restaurant._id}`}>
+                      <motion.div
+                        variants={listItemVariants}
+                        initial="initial"
+                        animate="animate"
+                        custom={index}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        transition={{
+                          scale: {
+                            duration: 0.2,
+                            ease: [0.23, 1, 0.32, 1],
+                          },
+                        }}
+                      >
+                        <Card className="w-full hover:bg-gray-200 transition-all rounded-3xl border-none shadow-none">
+                          <div className="relative overflow-hidden">
+                            <motion.img
+                              initial={{ scale: 1.2 }}
+                              animate={{ scale: 1 }}
+                              transition={{
+                                duration: 0.4,
+                                ease: [0.23, 1, 0.32, 1],
+                              }}
+                              src={restaurant.profileImage.secure_url}
+                              alt={restaurant.name}
+                              className="w-full h-[160px] object-cover p-2 rounded-3xl"
+                            />
+                            <motion.div
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{
+                                delay: 0.2,
+                                duration: 0.4,
+                                ease: [0.23, 1, 0.32, 1],
+                              }}
+                              className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1"
+                            >
+                              <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                              <span className="text-sm font-medium">
+                                {restaurant.avgRating
+                                  ? restaurant.avgRating.toFixed(1)
+                                  : "New"}
+                              </span>
+                            </motion.div>
+                          </div>
+                          <CardHeader className="px-4 py-2">
+                            <motion.div
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{
+                                delay: 0.3,
+                                duration: 0.4,
+                                ease: [0.23, 1, 0.32, 1],
+                              }}
+                            >
+                              <CardTitle>{restaurant.name}</CardTitle>
+                              <CardDescription className="justify-start  flex mt-2 overflow-hidden">
+                                <div className="space-y-2">
+                                  <p className="text-sm text-gray-600 text-center">
+                                    {restaurant.address}
+                                  </p>
+                                  {restaurant.categories &&
+                                    restaurant.categories.length > 0 && (
+                                      <motion.div
+                                        className="flex flex-wrap justify-center gap-1"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{
+                                          delay: 0.4,
+                                          duration: 0.4,
+                                        }}
+                                      >
+                                        {restaurant.categories.map(
+                                          (category, idx) => (
+                                            <motion.span
+                                              key={idx}
+                                              initial={{ scale: 0 }}
+                                              animate={{ scale: 1 }}
+                                              transition={{
+                                                delay: 0.4 + idx * 0.1,
+                                                duration: 0.2,
+                                                ease: [0.23, 1, 0.32, 1],
+                                              }}
+                                              className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full"
+                                            >
+                                              {category}
+                                            </motion.span>
+                                          ),
+                                        )}
+                                      </motion.div>
+                                    )}
+                                </div>
+                              </CardDescription>
+                            </motion.div>
+                          </CardHeader>
+                        </Card>
+                      </motion.div>
+                    </Link>
+                  </CarouselItem>
+                ))}
+          </AnimatePresence>
         </CarouselContent>
       </Carousel>
-    </div>
+    </motion.div>
   );
 }

@@ -1,8 +1,11 @@
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import api from "../../lib/apiInstance";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import Layout from "../../components/layout/layout";
 import React, { memo, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import "./slider.styles.css";
 import {
   Search,
   MapPin,
@@ -14,6 +17,7 @@ import {
   ArrowUpDown,
 } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useUpdateQueryParam } from "../../hooks/useUpdateQueryParam";
 
 import {
   Select,
@@ -22,6 +26,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useEffect, useRef } from "react";
+import Loading from "@/components/Loading";
 
 // Animation variants
 const containerVariants = {
@@ -85,7 +91,7 @@ const filterButtons = [
   {
     icon: Star,
     text: "Rating",
-    param: "minRating",
+    param: "avgRating",
     options: [
       { value: "4", label: "4+ Stars" },
       { value: "3", label: "3+ Stars" },
@@ -94,21 +100,11 @@ const filterButtons = [
     ],
   },
   {
-    icon: DollarSign,
-    text: "Price",
-    param: "priceRange",
-    options: [
-      { value: "low", label: "$ (Low)" },
-      { value: "medium", label: "$$ (Medium)" },
-      { value: "high", label: "$$$+ (High)" },
-    ],
-  },
-  {
     icon: ArrowUpDown,
     text: "Sort By",
     param: "sortBy",
     options: [
-      { value: "rating", label: "Rating: High to Low" },
+      { value: "avgRating", label: "Rating: High to Low" },
       { value: "reviewCount", label: "Most Reviewed" },
       { value: "priceAsc", label: "Price: Low to High" },
       { value: "priceDesc", label: "Price: High to Low" },
@@ -135,7 +131,13 @@ const AnimatedSelect = memo(({ filter, value, onValueChange, custom }) => (
         </div>
       </SelectTrigger>
       <SelectContent className="rounded-xl">
-        <SelectItem value="all">All {filter.text}</SelectItem>
+        <Button
+          variant={"ghost"}
+          className=" w-full"
+          onClick={() => onValueChange(undefined)}
+        >
+          All {filter.text}
+        </Button>
         {filter.options.map((option) => (
           <SelectItem key={option.value} value={option.value}>
             {option.label}
@@ -151,16 +153,16 @@ AnimatedSelect.displayName = "AnimatedSelect";
 const ExplorePage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const observerTarget = useRef(null);
 
   const category = searchParams.get("category") || "";
-  const location = searchParams.get("location") || "";
-  // Memoize getFilterValue function
+  const location = searchParams.get("address") || "";
+
   const getFilterValue = useCallback(
     (param) => searchParams.get(param) || "",
     [searchParams],
   );
 
-  // Memoize updateFilters function
   const updateFilters = useCallback(
     (key, value) => {
       const current = new URLSearchParams(Array.from(searchParams.entries()));
@@ -179,16 +181,67 @@ const ExplorePage = () => {
     [navigate, searchParams],
   );
 
-  // Debounced search update
-  const debouncedUpdateSearch = (val) => updateFilters("q", val);
+  const debouncedUpdateSearch = (val) => updateFilters("name", val);
 
-  // Fetch restaurants with filters
-  const { data: response, isPending } = useQuery({
-    queryKey: ["restaurants", ...Array.from(searchParams.entries())],
-    queryFn: () => api.get(`/restaurants?${searchParams.toString()}`),
-  });
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } =
+    useInfiniteQuery({
+      queryKey: ["restaurants", ...Array.from(searchParams.entries())],
+      queryFn: ({ pageParam = 1 }) =>
+        api.get(`/restaurants?${searchParams.toString()}&page=${pageParam}`),
+      getNextPageParam: (lastPage) => {
+        const { pagination } = lastPage.data.data;
+        return pagination.page < pagination.totalPages
+          ? pagination.page + 1
+          : undefined;
+      },
+      initialPageParam: 1,
+    });
 
-  const restaurants = response?.data?.data?.restaurants || [];
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.1 },
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => {
+      if (observerTarget.current) {
+        observer.unobserve(observerTarget.current);
+      }
+    };
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  const restaurants =
+    data?.pages.flatMap((page) => page.data.data.restaurants) || [];
+
+  // In your ExplorePage component, add these states and constants
+  const MIN_PRICE = 1;
+  const MAX_PRICE = 1000;
+  const STEP = 10;
+
+  const updateQueryParam = useUpdateQueryParam();
+  // Add these to your component's state declarations
+  const [minPrice, setMinPrice] = useState(MIN_PRICE);
+  const [maxPrice, setMaxPrice] = useState(MAX_PRICE);
+
+  // Add this effect to handle price range updates
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log("updating price range");
+      updateQueryParam([
+        { key: "minPrice", value: minPrice },
+        { key: "maxPrice", value: maxPrice },
+      ]);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [minPrice, maxPrice]);
 
   return (
     <Layout>
@@ -211,7 +264,7 @@ const ExplorePage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
                   type="text"
-                  value={getFilterValue("q")}
+                  value={getFilterValue("name")}
                   onChange={(e) => debouncedUpdateSearch(e.target.value)}
                   placeholder="Search for restaurants, cuisines, or dishes"
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
@@ -260,6 +313,113 @@ const ExplorePage = () => {
                 )}
               </div>
 
+              {/* Price Range Filter */}
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-3">Price Range</h3>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">
+                      Min: ${minPrice}
+                    </span>
+                    <span className="text-sm text-gray-600">
+                      Max: ${maxPrice}
+                    </span>
+                  </div>
+
+                  <div className="relative pt-6">
+                    {/* Price range track */}
+                    <div className="absolute h-1 w-full bg-gray-200 rounded"></div>
+
+                    {/* Active price range */}
+                    <div
+                      className="absolute h-1 bg-red-500 rounded"
+                      style={{
+                        left: `${((minPrice - MIN_PRICE) / (MAX_PRICE - MIN_PRICE)) * 100}%`,
+                        right: `${100 - ((maxPrice - MIN_PRICE) / (MAX_PRICE - MIN_PRICE)) * 100}%`,
+                      }}
+                    ></div>
+
+                    {/* Min price input */}
+                    <input
+                      type="range"
+                      min={MIN_PRICE}
+                      max={MAX_PRICE}
+                      value={minPrice}
+                      step={STEP}
+                      onChange={(e) => {
+                        const value = Math.min(
+                          Number(e.target.value),
+                          maxPrice - STEP,
+                        );
+                        setMinPrice(value);
+                      }}
+                      className="absolute w-full appearance-none bg-transparent pointer-events-none"
+                      style={{
+                        height: "1rem",
+                        WebkitAppearance: "none",
+                      }}
+                    />
+
+                    {/* Max price input */}
+                    <input
+                      type="range"
+                      min={MIN_PRICE}
+                      max={MAX_PRICE}
+                      value={maxPrice}
+                      step={STEP}
+                      onChange={(e) => {
+                        const value = Math.max(
+                          Number(e.target.value),
+                          minPrice + STEP,
+                        );
+                        setMaxPrice(value);
+                      }}
+                      className="absolute w-full appearance-none bg-transparent pointer-events-none"
+                      style={{
+                        height: "1rem",
+                        WebkitAppearance: "none",
+                      }}
+                    />
+                  </div>
+
+                  {/* Custom input fields for direct price entry */}
+                  <div className="flex items-center justify-between gap-4 mt-4">
+                    <div className="flex-1">
+                      <input
+                        type="number"
+                        min={MIN_PRICE}
+                        max={maxPrice - STEP}
+                        value={minPrice}
+                        onChange={(e) => {
+                          const value = Number(e.target.value);
+                          if (value >= MIN_PRICE && value <= maxPrice - STEP) {
+                            console.log(value, "value");
+                            setMinPrice(value);
+                          }
+                        }}
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                      />
+                    </div>
+                    <span className="text-gray-400">-</span>
+                    <div className="flex-1">
+                      <input
+                        type="number"
+                        min={minPrice + STEP}
+                        max={MAX_PRICE}
+                        value={maxPrice}
+                        onChange={(e) => {
+                          const value = Number(e.target.value);
+                          if (value <= MAX_PRICE && value >= minPrice + STEP) {
+                            setMaxPrice(value);
+                          }
+                        }}
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Location Filter */}
               <div className="mb-6">
                 <h3 className="text-lg font-semibold mb-3">Location</h3>
@@ -271,7 +431,7 @@ const ExplorePage = () => {
                   <input
                     type="text"
                     value={location}
-                    onChange={(e) => updateFilters("location", e.target.value)}
+                    onChange={(e) => updateFilters("address", e.target.value)}
                     placeholder="Enter location"
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl"
                   />
@@ -279,78 +439,100 @@ const ExplorePage = () => {
               </div>
             </div>
           </motion.div>
-
           {/* Restaurant Listings */}
-          <div className="max-w-7xl mx-auto px-4 ">
+          <div className="flex-1">
             {isPending ? (
               <motion.div
                 className="flex justify-center items-center h-64"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
               >
-                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-red-500" />
+                <Loading />
               </motion.div>
             ) : (
-              <motion.div
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 cursor-pointer"
-                variants={containerVariants}
-                initial="initial"
-                animate="animate"
-              >
-                {restaurants.map((restaurant, i) => (
-                  <motion.div
-                    key={restaurant._id}
-                    variants={listItemVariants}
-                    onClick={() => navigate(`/restaurant/${restaurant._id}`)}
-                    custom={i}
-                    initial="initial"
-                    animate="animate"
-                    whileHover={{ y: -5 }}
-                    className="bg-white rounded-xl shadow overflow-hidden hover:shadow-lg transition-shadow"
-                  >
-                    <motion.img
-                      initial={{ opacity: 0, scale: 1.1 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.4 }}
-                      src={restaurant.profileImage.secure_url}
-                      alt={restaurant.name}
-                      className="w-full h-48 object-cover"
-                    />
-                    <div className="p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <h3 className="text-lg font-semibold">
-                          {restaurant.name}
-                        </h3>
-                        <motion.span
-                          className="flex items-center text-sm"
-                          whileHover={{ scale: 1.1 }}
-                        >
-                          <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                          <span className="ml-1">{restaurant.avgRating}</span>
-                        </motion.span>
-                      </div>
-                      <p className="text-gray-600 text-sm mb-2">
-                        {restaurant.categories?.join(", ") || "No categories"}
-                      </p>
-                      <p className="text-gray-500 text-sm mb-3">
-                        {restaurant.address}
-                      </p>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-600">
-                          {restaurant.openingHours}
-                        </span>
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          className="px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors cursor-pointer"
-                        >
-                          Book Now
-                        </motion.button>
-                      </div>
+              <>
+                <motion.div
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 cursor-pointer"
+                  variants={containerVariants}
+                  initial="initial"
+                  animate="animate"
+                >
+                  {restaurants && restaurants?.length > 0 ? (
+                    restaurants.map((restaurant, i) => (
+                      <motion.div
+                        key={`${restaurant._id}-${i}`}
+                        variants={listItemVariants}
+                        onClick={() =>
+                          navigate(`/restaurants/${restaurant._id}`)
+                        }
+                        custom={i}
+                        initial="initial"
+                        animate="animate"
+                        whileHover={{ y: -5 }}
+                        className="bg-white rounded-xl shadow overflow-hidden hover:shadow-lg transition-shadow"
+                      >
+                        <motion.img
+                          initial={{ opacity: 0, scale: 1.1 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.4 }}
+                          src={restaurant.profileImage.secure_url}
+                          alt={restaurant.name}
+                          className="w-full h-48 object-cover"
+                        />
+                        <div className="p-4">
+                          <div className="flex justify-between items-start mb-2">
+                            <h3 className="text-lg font-semibold">
+                              {restaurant.name}
+                            </h3>
+                            <motion.span
+                              className="flex items-center text-sm"
+                              whileHover={{ scale: 1.1 }}
+                            >
+                              <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                              <span className="ml-1">
+                                {restaurant.avgRating
+                                  ? restaurant.avgRating?.toFixed(1)
+                                  : "New"}
+                              </span>
+                            </motion.span>
+                          </div>
+                          <p className="text-gray-600 text-sm mb-2">
+                            {restaurant.categories?.join(", ") ||
+                              "No categories"}
+                          </p>
+                          <p className="text-gray-500 text-sm mb-3">
+                            {restaurant.address}
+                          </p>
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-600">
+                              {restaurant.openingHours}
+                            </span>
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              className="px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors cursor-pointer"
+                            >
+                              Book Now
+                            </motion.button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))
+                  ) : (
+                    <div className="text-center text-gray-500">
+                      No restaurants found
                     </div>
-                  </motion.div>
-                ))}
-              </motion.div>
+                  )}
+                </motion.div>
+
+                {/* Loading more indicator and intersection observer target */}
+                <div
+                  ref={observerTarget}
+                  className="w-full h-20 flex items-center justify-center mt-4"
+                >
+                  {isFetchingNextPage && <Loading />}
+                </div>
+              </>
             )}
           </div>
         </div>
