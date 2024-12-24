@@ -7,27 +7,56 @@ import { useState, useEffect } from "react";
 import api from "../../lib/apiInstance";
 
 export default function SignUp() {
+  const [preview, setPreview] = useState(null); // To store the image preview URL
+
   const [data, setData] = useState({
     name: "",
     email: "",
     password: "",
     role: "",
+    image: null, // Image file
   });
-  useEffect(() => {}, []);
+
+  // Handle input changes
   const handelname = (e) => setData({ ...data, name: e.target.value });
   const handelemail = (e) => setData({ ...data, email: e.target.value });
   const handelpassword = (e) => setData({ ...data, password: e.target.value });
+
+  // Handle image upload
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setData({ ...data, image: file });
+      setPreview(URL.createObjectURL(file)); // Generate preview URL
+    }
+  };
+
+  // Handle form submission
   const onsubmit = () => {
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("email", data.email);
+    formData.append("password", data.password);
+    formData.append("role", data.role);
+    if (data.image) {
+      formData.append("image", data.image); // Append image file
+    }
+
+    // API call
     api
-      .post("users/signup", data)
+      .post("users/signup", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
       .then((response) => {
         console.log("Success:", response.data);
       })
       .catch((error) => {
         console.error("Error:", error.response?.data || error.message);
       });
-    console.log(data);
-  }; // iOS-like subtle animation variants
+  };
+
   const pageVariants = {
     initial: {
       opacity: 0,
@@ -74,6 +103,37 @@ export default function SignUp() {
           >
             Welcome back!
           </motion.h1>
+
+          <div className="w-[700px] p-6">
+            {/* Profile Image Upload */}
+            <div className="mb-6 flex items-center gap-4">
+              {/* Hidden Input and Image Button */}
+              <label
+                htmlFor="imageUpload"
+                className="w-24 h-24 rounded-full overflow-hidden border shadow-sm cursor-pointer relative"
+              >
+                {preview ? (
+                  <img
+                    src={preview}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full px-5 bg-gray-200 flex items-center justify-center text-gray-500">
+                    Upload Image
+                  </div>
+                )}
+                {/* Hidden Input */}
+                <input
+                  type="file"
+                  id="imageUpload"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                />
+              </label>
+            </div>
+          </div>
 
           {/* Name Fields */}
           <motion.div
