@@ -187,7 +187,7 @@ const ExplorePage = () => {
     useInfiniteQuery({
       queryKey: ["restaurants", ...Array.from(searchParams.entries())],
       queryFn: ({ pageParam = 1 }) =>
-        api.get(`/restaurants?${searchParams.toString()}&page=${pageParam}`),
+        api.get(`/restaurants?${searchParams?.toString()}&page=${pageParam}`),
       getNextPageParam: (lastPage) => {
         const { pagination } = lastPage.data.data;
         return pagination.page < pagination.totalPages
