@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import Layout from "../../components/layout/layout";
 import React, { memo, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import debounce from "lodash/debounce";
 import {
   Search,
   MapPin,
