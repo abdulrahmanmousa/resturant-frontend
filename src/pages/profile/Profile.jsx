@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import useAuthStore from "../../store/auth-store";
 import Loading from "../../components/Loading";
 import { Button } from "../../components/ui/button";
+import DeleteAccountButton from "../../components/profile/DeleteAccount";
 
 const formVariants = {
   initial: {
@@ -344,6 +345,7 @@ export default function Profile() {
             >
               {saving ? "Saving..." : "Save Changes"}
             </motion.button>
+            <DeleteAccountButton />
           </div>
         </motion.div>
       )}
