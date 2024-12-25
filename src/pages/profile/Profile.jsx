@@ -1,26 +1,159 @@
-import React from "react";
-import Layout from "../../components/layout/layout";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { use } from "react";
-import { useState, useEffect } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import Layout from "../../components/layout/layout";
 import api from "../../lib/apiInstance";
+import { toast } from "sonner";
+import useAuthStore from "../../store/auth-store";
+import Loading from "../../components/Loading";
+import { Button } from "../../components/ui/button";
+
+const formVariants = {
+  initial: {
+    opacity: 0,
+    y: 10,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.1,
+      ease: [0.23, 1, 0.32, 1],
+    },
+  },
+};
 
 export default function Profile() {
   const [preview, setPreview] = useState(null); // To store the image preview URL
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [passwordError, setPasswordError] = useState("");
+  const { setUser, user } = useAuthStore();
+
+  const handleSaveChanges = () => {
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("email", data.email);
+    formData.append("phone", data.phone);
+    if (data.image) {
+      formData.append("image", data.image);
+    }
+    updateProfileMutation(formData);
+  };
+
+  const { mutateAsync: updateProfileMutation, isPending: saving } = useMutation(
+    {
+      mutationFn: (data) =>
+        api.put("/users/update", data, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            token: localStorage.getItem("token"),
+          },
+        }),
+
+      onSuccess: (res) => {
+        toast.success("Profile updated successfully!");
+        refetch();
+        const updatedUser = { ...user, ...res.data.user };
+        setUser(updatedUser);
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+      },
+      onError: (error) => {
+        console.error("Error response:", error.response);
+        toast.error(
+          error.response?.data?.message ||
+            "An error occurred while updating the profile."
+        );
+      },
+    }
+  );
+
+  const handlePasswordChange = (e) => {
+    const { id, value } = e.target;
+    setPasswordData({ ...passwordData, [id]: value });
+  };
+
+  const handlePasswordUpdate = () => {
+    // Validate passwords
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPasswordError("New password and confirm password do not match.");
+      return;
+    } else if (passwordData.newPassword.length < 6) {
+      setPasswordError("Password must be at least 6 characters long.");
+      return;
+    }
+    setPasswordError(""); // Clear any existing errors
+
+    // API call to update password
+    api
+      .patch(
+        "/users/change-password",
+        {
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword,
+        },
+        {
+          headers: {
+            token: localStorage.getItem("token"), // Include token in headers
+          },
+        }
+      )
+      .then((response) => {
+        toast.success("Password updated successfully!");
+        setPasswordData({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        }); // Clear password fields
+      })
+      .catch(() => {
+        setPasswordError("An error occurred while updating the password.");
+      });
+  };
+
+  const {
+    data: profileData,
+    isPending,
+    error,
+    refetch,
+  } = useQuery({
+    queryFn: () =>
+      api
+        .get("/users/profile", {
+          headers: { token: localStorage.getItem("token") },
+        })
+        .then((res) => res.data.user), // Fetch user profile
+    queryKey: ["userProfile"],
+  });
 
   const [data, setData] = useState({
     name: "",
     email: "",
-    password: "",
-    role: "",
+    phone: "",
     image: null, // Image file
   });
+
+  // Populate the form with profile data once it's loaded
+  React.useEffect(() => {
+    if (profileData) {
+      setData({
+        name: profileData.name,
+        email: profileData.email,
+        phone: profileData.phone,
+        image: profileData.image,
+      });
+      if (profileData.image) {
+        setPreview(profileData.image.secure_url); // Set preview if image exists
+      }
+    }
+  }, [profileData]);
 
   // Handle input changes
   const handelname = (e) => setData({ ...data, name: e.target.value });
   const handelemail = (e) => setData({ ...data, email: e.target.value });
-  const handelpassword = (e) => setData({ ...data, password: e.target.value });
 
   // Handle image upload
   const handleImageUpload = (e) => {
@@ -31,83 +164,28 @@ export default function Profile() {
     }
   };
 
-  // Handle form submission
-  const onsubmit = () => {
-    const formData = new FormData();
-    formData.append("name", data.name);
-    formData.append("email", data.email);
-    formData.append("password", data.password);
-    formData.append("role", data.role);
-    if (data.image) {
-      formData.append("image", data.image); // Append image file
-    }
-
-    // API call
-    api
-      .post("users/signup", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((response) => {
-        console.log("Success:", response.data);
-      })
-      .catch((error) => {
-        console.error("Error:", error.response?.data || error.message);
-      });
-  };
-
-  const pageVariants = {
-    initial: {
-      opacity: 0,
-      y: 20,
-    },
-    animate: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: [0.23, 1, 0.32, 1], // iOS-like easing
-      },
-    },
-  };
-
-  const formVariants = {
-    initial: {
-      opacity: 0,
-      y: 10,
-    },
-    animate: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.1,
-        ease: [0.23, 1, 0.32, 1],
-      },
-    },
-  };
-
   return (
     <Layout>
-      <motion.div
-        className="flex justify-center items-center p-6 bg-white"
-        initial="initial"
-        animate="animate"
-        variants={pageVariants}
-      >
-        <div className="w-[700px] p-6">
-          {/* Heading */}
-          <motion.h1
-            className="text-2xl font-bold mb-6 text-gray-900"
-            variants={formVariants}
-          >
-            Welcome back!
-          </motion.h1>
-
+      {isPending ? (
+        <Loading />
+      ) : (
+        <motion.div
+          className="flex justify-center items-center p-6 bg-white"
+          initial="initial"
+          animate="animate"
+          variants={{
+            initial: { opacity: 0, y: 20 },
+            animate: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+          }}
+        >
           <div className="w-[700px] p-6">
+            {/* Heading */}
+            <motion.h1 className="text-2xl font-bold mb-6 text-gray-900">
+              Your Profile
+            </motion.h1>
+
             {/* Profile Image Upload */}
             <div className="mb-6 flex items-center gap-4">
-              {/* Hidden Input and Image Button */}
               <label
                 htmlFor="imageUpload"
                 className="w-24 h-24 rounded-full overflow-hidden border shadow-sm cursor-pointer relative"
@@ -115,15 +193,14 @@ export default function Profile() {
                 {preview ? (
                   <img
                     src={preview}
-                    alt="Preview"
+                    alt="Profile Preview"
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full px-5 bg-gray-200 flex items-center justify-center text-gray-500">
-                    Upload Image
+                  <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
+                    No Image
                   </div>
                 )}
-                {/* Hidden Input */}
                 <input
                   type="file"
                   id="imageUpload"
@@ -133,192 +210,143 @@ export default function Profile() {
                 />
               </label>
             </div>
-          </div>
 
-          {/* Name Fields */}
-          <motion.div
-            className="grid gap-3 grid-cols-2"
-            variants={formVariants}
-          >
+            {/* Name Field */}
             <div className="mb-4">
               <label
-                htmlFor="firstName"
+                htmlFor="name"
                 className="block text-sm font-medium text-gray-700"
               >
-                First Name
+                Name
               </label>
               <input
                 type="text"
-                id="firstName"
+                id="name"
+                name="name"
+                value={data.name}
                 onChange={handelname}
-                placeholder="Name"
-                className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
+                className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
               />
             </div>
+
+            {/* Email Field */}
             <div className="mb-4">
               <label
-                htmlFor="lastName"
+                htmlFor="email"
                 className="block text-sm font-medium text-gray-700"
               >
-                Last Name
+                Email
               </label>
               <input
-                type="text"
-                id="lastName"
-                placeholder="Name"
-                className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
+                type="email"
+                id="email"
+                name="email"
+                disabled
+                value={data.email}
+                onChange={handelemail}
+                className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
               />
             </div>
-          </motion.div>
 
-          {/* Email Field */}
-          <motion.div className="mb-4" variants={formVariants}>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Email
-            </label>
-            <input
-              type="email"
-              onChange={handelemail}
-              id="email"
-              placeholder="Email"
-              className="mt-1 block w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
-            />
-          </motion.div>
-
-          {/* Phone */}
-          <motion.div className="mb-4" variants={formVariants}>
-            <label
-              htmlFor="phone"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Phone Number
-            </label>
-            <input
-              type="tel"
-              id="phone"
-              placeholder="(123) 456-7890"
-              className="mt-1 block w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
-            />
-          </motion.div>
-
-          {/* Password Fields */}
-          <motion.div className="mt-5 mb-2" variants={formVariants}>
-            <label className="block text-lg font-medium text-gray-700">
-              Update Password
-            </label>
-            <div className="grid mt-5 gap-3 grid-cols-2">
-              <div className="mb-4">
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Current Password
-                </label>
-                <input
-                  type="password"
-                  onChange={handelpassword}
-                  id="password"
-                  placeholder="Current Password"
-                  className="mt-1 block w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  New Password
-                </label>
-                <input
-                  type="password"
-                  onChange={handelpassword}
-                  id="password"
-                  placeholder="New Password"
-                  className="mt-1 block w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="confirmPassword"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Confirm New Password
-                </label>
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  placeholder="Confirm New Password"
-                  className="mt-1 block w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
-                />
-              </div>
+            {/* Phone Field */}
+            <div className="mb-4">
+              <label
+                htmlFor="phone"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Phone Number
+              </label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                value={data.phone}
+                onChange={(e) => setData({ ...data, phone: e.target.value })}
+                className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
+              />
             </div>
-            <motion.button
-              className="w-1/2 my-5 bg-red-500 items-center justify-center text-white py-2 rounded-md hover:bg-red-600 transition-all duration-200"
-              variants={formVariants}
-              onClick={onsubmit}
-              whileTap={{ scale: 0.98 }}
-            >
-              Update Password
-            </motion.button>
-          </motion.div>
+            {/* Password Fields */}
+            <motion.div className="mt-5 mb-2">
+              <label className="block text-lg font-medium text-gray-700">
+                Update Password
+              </label>
+              <div className="grid mt-5 gap-3 grid-cols-2">
+                <div className="mb-4">
+                  <label
+                    htmlFor="newPassword"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    New Password
+                  </label>
+                  <input
+                    type="password"
+                    id="newPassword"
+                    value={passwordData.newPassword}
+                    onChange={handlePasswordChange}
+                    placeholder="New Password"
+                    className="mt-1 block w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
+                  />
+                </div>
 
-          {/* Sign Up Button */}
-          {/* <motion.button
-            className="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-all duration-200"
-            variants={formVariants}
-            onClick={onsubmit}
-            whileTap={{ scale: 0.98 }}
-          >
-            Sign Up
-          </motion.button> */}
+                <div className="mb-4">
+                  <label
+                    htmlFor="confirmPassword"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Confirm New Password
+                  </label>
+                  <input
+                    type="password"
+                    id="confirmPassword"
+                    value={passwordData.confirmPassword}
+                    onChange={handlePasswordChange}
+                    placeholder="Confirm New Password"
+                    className="mt-1 block w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="currentPassword"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Current Password
+                  </label>
+                  <input
+                    type="password"
+                    id="currentPassword"
+                    value={passwordData.currentPassword}
+                    onChange={handlePasswordChange}
+                    placeholder="Current Password"
+                    className="mt-1 block w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
+                  />
+                </div>
+              </div>
 
-          {/* Login Link */}
-          {/* <motion.div
-            className="text-center my-4 text-sm text-gray-500"
-            variants={formVariants}
-          >
-            Already have an account?
-          </motion.div> */}
+              {passwordError && (
+                <p className="text-red-500 text-sm">{passwordError}</p>
+              )}
 
-          <Link to="/profile">
+              <Button
+                variant="secondary"
+                className="w-1/2 my-5  items-center justify-center  py-2 rounded-md  transition-all duration-200"
+                onClick={handlePasswordUpdate}
+                whileTap={{ scale: 0.98 }}
+              >
+                Update Password
+              </Button>
+            </motion.div>
+            {/* Save Changes Button */}
             <motion.button
-              className="w-full my-6 bg-gray-200 text-gray-800 font-semibold py-2 rounded-md hover:bg-gray-300 transition-all duration-200"
-              variants={formVariants}
+              className="w-full my-6 bg-red-500 text-white font-semibold py-2 rounded-md hover:bg-red-600 transition-all duration-200"
+              onClick={handleSaveChanges}
               whileTap={{ scale: 0.98 }}
+              disabled={saving}
             >
-              Save Changes
+              {saving ? "Saving..." : "Save Changes"}
             </motion.button>
-          </Link>
-
-          {/* Social Login Options */}
-          {/* <motion.div
-            variants={formVariants}
-            className="text-center mt-6 text-gray-500 text-sm"
-          >
-            Or continue with
-          </motion.div>
-          <motion.div
-            variants={formVariants}
-            className="flex justify-center mt-4 gap-4"
-          >
-            <motion.button
-              className="px-6 py-2 border rounded-md text-gray-700 hover:bg-gray-100 transition-all duration-200"
-              whileTap={{ scale: 0.98 }}
-            >
-              Google
-            </motion.button>
-            <motion.button
-              className="px-6 py-2 border rounded-md text-gray-700 hover:bg-gray-100 transition-all duration-200"
-              whileTap={{ scale: 0.98 }}
-            >
-              Apple
-            </motion.button>
-          </motion.div> */}
-        </div>
-      </motion.div>
+          </div>
+        </motion.div>
+      )}
     </Layout>
   );
 }

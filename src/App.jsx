@@ -29,7 +29,7 @@ function App() {
           <Route path="/explore" element={<Explore />} />
           <Route path="/profile" element={<Profile />} />
         </Routes>
-        <Toaster />
+        <Toaster richColors />
       </QueryClientProvider>
     </HashRouter>
   );

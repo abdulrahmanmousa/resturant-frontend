@@ -57,9 +57,9 @@ export default function Navbar() {
           <div className=" flex items-center justify-end gap-4">
             <Link to="/profile" className="text-lg">
               <img
-                src={user?.image}
+                src={user?.image?.secure_url}
                 alt="user"
-                className="w-8 h-8 rounded-full"
+                className="w-8 h-8 rounded-full object-cover"
               />
             </Link>
             <Button
