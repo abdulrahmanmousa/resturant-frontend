@@ -131,7 +131,7 @@ export default function MainContent() {
           {/* Forgot Password */}
           <motion.div className="text-right mb-6" variants={contentVariants}>
             <Link
-              to="/forgot_password"
+              to="/reset-password"
               className="text-sm text-gray-500 hover:underline transition-all duration-200"
             >
               Forgot password?

@@ -3,6 +3,7 @@ import Layout from "../../components/layout/layout";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import api from "../../lib/apiInstance";
+import { use } from "react";
 
 export default function ForgetPassword() {
   const [email, setEmail] = useState(""); // Simplified email state
