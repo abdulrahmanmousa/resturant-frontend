@@ -23,7 +23,10 @@ function App() {
           <Route path="/register" element={<SingUp />} />
           <Route path="/restaurants" element={<Restaurants />} />
           <Route path="/restaurants/:id" element={<Restaurant />} />
-          <Route path="/reset-password" element={<ForgetPassword />} />
+          <Route path="/users">
+            <Route path="reset-password" element={<ForgetPassword />} />
+          </Route>
+
           <Route path="/update_password" element={<UpdatePassword />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/explore" element={<Explore />} />
