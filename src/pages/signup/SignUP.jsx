@@ -241,6 +241,33 @@ export default function SignUp() {
               </div>
             </div>
           </motion.div>
+          <motion.div className="mb-4" variants={formVariants}>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Select Role
+            </label>
+            <div className="flex items-center gap-4">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  value="restaurantOwner"
+                  checked={data.role === "restaurantOwner"}
+                  onChange={(e) => setData({ ...data, role: e.target.value })}
+                  className="form-radio text-red-500"
+                />
+                <span>Owner</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  value="user"
+                  checked={data.role === "user"}
+                  onChange={(e) => setData({ ...data, role: e.target.value })}
+                  className="form-radio text-red-500"
+                />
+                <span>User</span>
+              </label>
+            </div>
+          </motion.div>
 
           {/* Sign Up Button */}
           <motion.button

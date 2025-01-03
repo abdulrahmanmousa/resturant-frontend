@@ -1,7 +1,55 @@
 import React from "react";
 import Layout from "../../components/layout/layout";
-import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import api from "../../lib/apiInstance";
+
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
 export default function UpdatePassword() {
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token");
+  const contentVariants = {
+    initial: {
+      opacity: 0,
+      y: 10,
+    },
+    animate: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.1,
+        ease: [0.23, 1, 0.32, 1],
+      },
+    },
+  };
+
+  // create update password takes token and newPassowrd with api.patch '/users/reset-password'
+
+  const navigate = useNavigate();
+
+  const updatePassword = (token, newPassword) => {
+    api
+      .post("/users/reset-password", { resetToken: token, newPassword })
+      .then((response) => {
+        console.log("Success:", response.data);
+        toast.success("Password updated successfully");
+        navigate("/login");
+      })
+      .catch((error) => {
+        console.error("Error:", error.response?.data || error.message);
+      });
+  };
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    const newPassword = e.target[0].value;
+    const confirmPassword = e.target[1].value;
+    if (newPassword !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+    updatePassword(token, newPassword);
+  };
   return (
     <div>
       <Layout>
@@ -11,7 +59,7 @@ export default function UpdatePassword() {
               Change Password
             </h2>
 
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={onSubmit}>
               <div>
                 <label
                   htmlFor="password"
@@ -43,12 +91,13 @@ export default function UpdatePassword() {
                 />
               </div>
 
-              <Link
-                to="/update_password"
-                className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 text-center block"
+              <motion.button
+                className="w-full bg-red-500 text-white font-semibold py-2 rounded-md  transition-all duration-200"
+                variants={contentVariants}
+                whileTap={{ scale: 0.98 }}
               >
-                submit
-              </Link>
+                Submit
+              </motion.button>
             </form>
             <div className="text-center text-gray-600 mt-4">
               <Link to="/login" className="text-red-500 hover:underline">

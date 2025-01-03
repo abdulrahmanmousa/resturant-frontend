@@ -15,6 +15,7 @@ import {
 import ImagesModal from "../../components/modals/PreviewImagesModal";
 import api from "../../lib/apiInstance";
 import TableAvailability from "../../components/restaurant/TableAvailability";
+import BookTable from "../../components/restaurant/BookTable";
 
 export default function Restaurant() {
   const { id } = useParams();
@@ -212,7 +213,7 @@ export default function Restaurant() {
         <TableAvailability />
 
         {/* Table Booking Section */}
-        <div className="mt-8 w-2/4 mx-auto">
+        {/* <div className="mt-8 w-2/4 mx-auto">
           <h2 className="text-2xl font-bold mb-4">Book a Table</h2>
           <form className="space-y-4">
             <DateTimePicker />
@@ -232,7 +233,8 @@ export default function Restaurant() {
               Find a Table
             </button>
           </form>
-        </div>
+        </div> */}
+        <BookTable />
       </div>
     </Layout>
   );
