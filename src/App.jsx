@@ -12,6 +12,8 @@ import { Toaster } from "sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Explore from "./pages/explore/explore.jsx";
 import Profile from "./pages/profile/Profile.jsx";
+import AdminReservation from "./pages/reservations/AdminReservation.jsx";
+import UserReservation from "./pages/reservations/UserReservation.jsx";
 
 // Define the Users component
 function Users() {
@@ -31,6 +33,8 @@ function App() {
           <Route path="/restaurants" element={<Restaurants />} />
           <Route path="/restaurants/:id" element={<Restaurant />} />
           <Route path="/addrestaurant" element={<AddRestaurant />} />
+          <Route path="/adminreservations" element={<AdminReservation />} />
+          <Route path="/userreservations" element={<UserReservation />} />
 
           {/* Nested Routes */}
           <Route path="/users" element={<Users />}>
