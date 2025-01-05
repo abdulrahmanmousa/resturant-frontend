@@ -118,7 +118,7 @@ export default function AdminReservation() {
                     {reservation.mealId.map((meal, idx) => (
                       <div key={meal._id}>
                         <p>
-                          Meal ID: {meal.meal}, Quantity: {meal.quantity}
+                          Meal ID: {meal._id}, Quantity: {meal.quantity}
                         </p>
                       </div>
                     ))}
