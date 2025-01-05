@@ -10,7 +10,12 @@ export default function UserReservation() {
   // Fetch user reservations
   useEffect(() => {
     api
-      .get("/reservations/user") // API endpoint to get user reservations
+      .get("/reservations/user", {
+        headers: {
+          token: localStorage.getItem("token"), // Include token in headers
+        },
+      }) // API endpoint to get user reservations
+
       .then((response) => {
         setReservations(response.data.reservations); // Assuming the API returns reservations in this format
         setLoading(false);

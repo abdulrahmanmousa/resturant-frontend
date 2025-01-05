@@ -2,23 +2,24 @@ import React, { useEffect, useState } from "react";
 import api from "../../lib/apiInstance";
 import moment from "moment";
 import Layout from "../../components/layout/layout";
+import { useParams } from "react-router-dom";
 
 export default function AdminReservation() {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  //   const restaurantId = useParams()
+  const restaurantId = JSON.parse(localStorage.getItem("user")).restaurant;
   // Fetch reservations from the API
   useEffect(() => {
     api
-      .get("/reservations", {
-        params: {
-          // Add optional filters here if needed
-          // status: "reserved", // Example filter
-          // restaurantId: "restaurant_id_here",
+      .get(`/reservations/restaurant/${restaurantId}`, {
+        headers: {
+          restaurantId: JSON.parse(localStorage.getItem("user")).restaurant, // Parse user object to access the restaurant ID
+          token: localStorage.getItem("token"), // Include token in headers
         },
-      })
+      }) // Using the relative path with api instance
       .then((response) => {
-        setReservations(response.data.reservations); // Assuming reservations key in response
+        setReservations(response.data.reservations); // Assuming reservations key in the response
         setLoading(false);
       })
       .catch((error) => {
