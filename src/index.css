@@ -9,6 +9,13 @@
     url(./assets/fonts/epilogue.ttf) format("truetype");
 }
 
+@font-face {
+  font-family: "OkineSans";
+  src:
+    local("OkineSans"),
+    url(./assets/fonts/MADEOkineSansPERSONALUSE-Bold.otf) format("truetype");
+}
+
 @layer base {
   body {
     font-family: "Epilogue", sans-serif;
@@ -18,6 +25,12 @@
   }
 }
 
+@font-face {
+  font-family: "Arab";
+  src:
+    local("Arab"),
+    url(./assets/fonts/ArabicUIDisplayBlack.otf) format("truetype");
+}
 @tailwind utilities;
 
 @layer base {

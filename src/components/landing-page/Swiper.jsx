@@ -50,7 +50,7 @@ export default function Swiper() {
             </div>
             <button
               onClick={onFindTable}
-              className="px-6 py-2 bg-red-500 text-white h-[52px] rounded-2xl hover:bg-red-600 transition-colors m-1"
+              className="px-6 py-2 bg-red-500 font-bold text-white h-[52px] rounded-2xl hover:bg-red-600 transition-colors m-1"
             >
               Find a table
             </button>
