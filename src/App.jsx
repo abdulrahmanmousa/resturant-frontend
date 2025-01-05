@@ -1,19 +1,20 @@
 import React from "react";
 import { Routes, Route, HashRouter, Outlet } from "react-router-dom";
-import Login from "./pages/login/login";
-import LandingPage from "./pages/landing-page/landing-page";
-import AddRestaurant from "./pages/addrestaurant/AddRestaurant";
-import Restaurants from "./pages/restaurants/restaurants";
-import Restaurant from "./pages/restaurant/restaurant";
-import SingUp from "./pages/signup/SignUP";
-import ForgetPassword from "./pages/forgetpassword/ForgetPassword";
-import UpdatePassword from "./pages/updatepassowrd/UpdatePassword";
 import { Toaster } from "sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Explore from "./pages/explore/explore.jsx";
-import Profile from "./pages/profile/Profile.jsx";
-import AdminReservation from "./pages/reservations/AdminReservation.jsx";
-import UserReservation from "./pages/reservations/UserReservation.jsx";
+import LandingPage from "./pages/user/landing-page/landing-page";
+import Login from "./pages/auth/login";
+import Signup from "./pages/auth/signup";
+import Restaurants from "./pages/user/restaurants/restaurants";
+import Restaurant from "./pages/user/restaurants/restaurant/restaurant";
+import CreateRestaurant from "./pages/owner/restaurants/create-restaurant";
+import AdminReservations from "./pages/owner/reservations/reservations";
+import UserReservations from "./pages/user/reservations/reservations";
+import UpdatePassword from "./pages/auth/update-password";
+import ForgetPassword from "./pages/auth/forget-password";
+import Profile from "./pages/auth/profile";
+import Explore from "./pages/user/explore/explore";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 // Define the Users component
 function Users() {
@@ -27,23 +28,28 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <Routes>
           {/* Main Routes */}
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<SingUp />} />
-          <Route path="/restaurants" element={<Restaurants />} />
-          <Route path="/restaurants/:id" element={<Restaurant />} />
-          <Route path="/addrestaurant" element={<AddRestaurant />} />
-          <Route path="/adminreservations" element={<AdminReservation />} />
-          <Route path="/userreservations" element={<UserReservation />} />
+          <Route
+            path="/owner/restaurants/create"
+            element={<CreateRestaurant />}
+          />
 
-          {/* Nested Routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Signup />} />
           <Route path="/users" element={<Users />}>
             <Route path="reset-password" element={<UpdatePassword />} />
           </Route>
-
           <Route path="/forgot_password" element={<ForgetPassword />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/explore" element={<Explore />} />
+
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/restaurants" element={<Restaurants />} />
+            <Route path="/restaurants/:id" element={<Restaurant />} />
+            <Route path="/owner/reservations" element={<AdminReservations />} />
+            <Route path="/user/reservations" element={<UserReservations />} />
+
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/explore" element={<Explore />} />
+          </Route>
         </Routes>
         <Toaster richColors />
       </QueryClientProvider>

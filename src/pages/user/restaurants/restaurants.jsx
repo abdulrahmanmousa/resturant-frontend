@@ -2,8 +2,8 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import Layout from "../../components/layout/layout";
-import api from "../../lib/apiInstance";
+import Layout from "../../../components/layout/layout";
+import api from "../../../lib/apiInstance";
 import {
   ArrowUpDown,
   Clock,
@@ -12,6 +12,7 @@ import {
   Umbrella,
   UtensilsCrossed,
 } from "lucide-react";
+import PageLoading from "../../../components/PageLoading";
 
 // Motion variants (placeholders for animation logic)
 const containerVariants = {
@@ -61,8 +62,8 @@ const filterButtons = [
 
 export default function Restaurants() {
   const { data, isPending, error } = useQuery({
-    queryFn: () =>
-      api.get("/restaurants").then((res) => res.data.data.restaurants),
+    queryFn: async () =>
+      await api.get("/restaurants").then((res) => res.data.data.restaurants),
     queryKey: ["restaurants"],
   });
 
@@ -71,7 +72,7 @@ export default function Restaurants() {
   return (
     <Layout>
       {isPending ? (
-        <h1> Loading... </h1>
+        <PageLoading />
       ) : (
         <motion.div
           className="bg-white min-h-screen px-8 py-4 m-auto justify-center items-center w-3/4"
@@ -102,48 +103,53 @@ export default function Restaurants() {
             All restaurants
           </motion.h2>
           <div className="space-y-4">
-            {data.map((restaurant, index) => (
-              <Link to={`/restaurants/${restaurant._id}`} key={restaurant._id}>
-                <motion.div
-                  className="flex items-center justify-between p-4 rounded hover:shadow-md transition-all duration-200"
-                  variants={listItemVariants}
-                  custom={index}
-                  whileHover={{
-                    scale: 1.02,
-                    transition: { duration: 0.2, ease: [0.23, 1, 0.32, 1] },
-                  }}
-                  whileTap={{ scale: 0.98 }}
+            {data &&
+              Array.isArray(data) &&
+              data.map((restaurant, index) => (
+                <Link
+                  to={`/restaurants/${restaurant._id}`}
+                  key={restaurant._id}
                 >
-                  <div className="flex items-center space-x-4">
-                    <motion.img
-                      src={restaurant.profileImage.secure_url}
-                      alt={restaurant.name}
-                      className="w-12 h-12 rounded object-cover"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.3, delay: index * 0.1 }}
-                    />
-                    <div>
-                      <h3 className="text-lg font-bold">{restaurant.name}</h3>
-                      <p className="text-gray-500">{restaurant.address}</p>
-                      <p className="text-gray-500">
-                        ⭐ {restaurant.avgRating || 0} (
-                        {restaurant.categories.join(", ") || "No categories"})
-                      </p>
-                      <p className="text-sm text-gray-400">
-                        {restaurant.openingHours}
-                      </p>
-                    </div>
-                  </div>
                   <motion.div
-                    whileHover={{ x: 5 }}
-                    transition={{ duration: 0.2 }}
+                    className="flex items-center justify-between p-4 rounded hover:shadow-md transition-all duration-200"
+                    variants={listItemVariants}
+                    custom={index}
+                    whileHover={{
+                      scale: 1.02,
+                      transition: { duration: 0.2, ease: [0.23, 1, 0.32, 1] },
+                    }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    <span className="text-gray-400 text-xl">›</span>
+                    <div className="flex items-center space-x-4">
+                      <motion.img
+                        src={restaurant.profileImage.secure_url}
+                        alt={restaurant.name}
+                        className="w-12 h-12 rounded object-cover"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.3, delay: index * 0.1 }}
+                      />
+                      <div>
+                        <h3 className="text-lg font-bold">{restaurant.name}</h3>
+                        <p className="text-gray-500">{restaurant.address}</p>
+                        <p className="text-gray-500">
+                          ⭐ {restaurant.avgRating || 0} (
+                          {restaurant.categories.join(", ") || "No categories"})
+                        </p>
+                        <p className="text-sm text-gray-400">
+                          {restaurant.openingHours}
+                        </p>
+                      </div>
+                    </div>
+                    <motion.div
+                      whileHover={{ x: 5 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <span className="text-gray-400 text-xl">›</span>
+                    </motion.div>
                   </motion.div>
-                </motion.div>
-              </Link>
-            ))}
+                </Link>
+              ))}
           </div>
         </motion.div>
       )}

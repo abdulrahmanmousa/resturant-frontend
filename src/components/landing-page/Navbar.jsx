@@ -9,7 +9,7 @@ export default function Navbar() {
     { name: "Home", url: "/" },
     { name: "Explore", url: "/explore" },
     { name: "Restaurants", url: "/restaurants" },
-    { name: "Offers", url: "/offers" },
+    { name: "Orders", url: "/user/reservations" },
   ];
 
   const { user, setUser } = useAuthStore();

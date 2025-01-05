@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import api from "../../lib/apiInstance";
+import api from "../../../lib/apiInstance";
 import moment from "moment";
-import Layout from "../../components/layout/layout";
+import Layout from "../../../components/layout/layout";
+import PageLoading from "../../../components/PageLoading";
 
-export default function UserReservation() {
+export default function UserReservations() {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -23,7 +24,7 @@ export default function UserReservation() {
       .catch((error) => {
         console.error(
           "Error fetching reservations:",
-          error.response?.data || error.message
+          error.response?.data || error.message,
         );
         setLoading(false);
       });
@@ -32,7 +33,7 @@ export default function UserReservation() {
   if (loading) {
     return (
       <Layout>
-        <div className="text-center mt-10">Loading your reservations...</div>
+        <PageLoading />
       </Layout>
     );
   }
@@ -98,8 +99,8 @@ export default function UserReservation() {
                         reservation.status === "reserved"
                           ? "bg-green-200 text-green-800"
                           : reservation.status === "cancelled"
-                          ? "bg-red-200 text-red-800"
-                          : "bg-gray-200 text-gray-800"
+                            ? "bg-red-200 text-red-800"
+                            : "bg-gray-200 text-gray-800"
                       }`}
                     >
                       {reservation.status}

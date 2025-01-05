@@ -73,7 +73,7 @@ const ShimmerCard = ({ index }) => (
 );
 
 export function Recommended_res() {
-  const { data, isLoading } = useQuery({
+  const { data, isPending } = useQuery({
     queryKey: ["restaurants"],
     queryFn: () => api.get(`/restaurants?limit=10&sortBy=avgRating`),
   });
@@ -97,7 +97,7 @@ export function Recommended_res() {
       <Carousel className="w-3/4 m-auto">
         <CarouselContent className="flex gap-4">
           <AnimatePresence mode="wait">
-            {isLoading
+            {isPending
               ? // Shimmer Loading
                 Array(5)
                   .fill(0)
@@ -113,7 +113,6 @@ export function Recommended_res() {
                         initial="initial"
                         animate="animate"
                         custom={index}
-                        whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         transition={{
                           scale: {

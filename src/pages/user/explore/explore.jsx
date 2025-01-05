@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import api from "../../lib/apiInstance";
+import api from "../../../lib/apiInstance";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import Layout from "../../components/layout/layout";
+import Layout from "../../../components/layout/layout";
 import React, { memo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./slider.styles.css";
@@ -15,7 +15,7 @@ import {
   ArrowUpDown,
 } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useUpdateQueryParam } from "../../hooks/useUpdateQueryParam";
+import { useUpdateQueryParam } from "../../../hooks/useUpdateQueryParam";
 
 import {
   Select,
@@ -25,7 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useEffect, useRef } from "react";
-import PageLoading from "../../components/PageLoading";
+import PageLoading from "../../../components/PageLoading";
 
 // Animation variants
 const containerVariants = {
@@ -183,7 +183,11 @@ const ExplorePage = () => {
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } =
     useInfiniteQuery({
-      queryKey: ["restaurants", ...Array.from(searchParams?.entries())],
+      queryKey: [
+        "restaurants",
+        "infinite",
+        ...Array.from(searchParams?.entries()),
+      ],
       queryFn: ({ pageParam = 1 }) =>
         api.get(`/restaurants?${searchParams?.toString()}&page=${pageParam}`),
       getNextPageParam: (lastPage) => {
@@ -205,12 +209,12 @@ const ExplorePage = () => {
       { threshold: 0.1 },
     );
 
-    if (observerTarget.current) {
+    if (observerTarget?.current) {
       observer.observe(observerTarget.current);
     }
 
     return () => {
-      if (observerTarget.current) {
+      if (observerTarget?.current) {
         observer.unobserve(observerTarget.current);
       }
     };
@@ -220,7 +224,7 @@ const ExplorePage = () => {
     data?.pages.flatMap((page) => page.data.data.restaurants) || [];
 
   // In your ExplorePage component, add these states and constants
-  const MIN_PRICE = 1;
+  const MIN_PRICE = 0;
   const MAX_PRICE = 1000;
   const STEP = 10;
 

@@ -1,22 +1,22 @@
 import React from "react";
-import Layout from "../../components/layout/layout";
+import Layout from "../../../../components/layout/layout";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
 import { Phone, Clock, UtensilsCrossed } from "lucide-react";
-import DateTimePicker from "../../components/DateTimePicker";
+import DateTimePicker from "../../../../components/DateTimePicker";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../components/ui/select";
-import ImagesModal from "../../components/modals/PreviewImagesModal";
-import api from "../../lib/apiInstance";
-import TableAvailability from "../../components/restaurant/TableAvailability";
-import BookTable from "../../components/restaurant/BookTable";
-import PageLoading from "../../components/PageLoading";
+} from "../../../../components/ui/select";
+import ImagesModal from "../../../../components/modals/PreviewImagesModal";
+import api from "../../../../lib/apiInstance";
+import TableAvailability from "../../../../components/restaurant/TableAvailability";
+import BookTable from "../../../../components/restaurant/BookTable";
+import PageLoading from "../../../../components/PageLoading";
 
 export default function Restaurant() {
   const { id } = useParams();

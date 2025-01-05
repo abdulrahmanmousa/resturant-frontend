@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import api from "../../lib/apiInstance";
+import api from "../../../lib/apiInstance";
 import moment from "moment";
-import Layout from "../../components/layout/layout";
+import Layout from "../../../components/layout/layout";
 import { useParams } from "react-router-dom";
 
-export default function AdminReservation() {
+export default function AdminReservations() {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   //   const restaurantId = useParams()
@@ -25,7 +25,7 @@ export default function AdminReservation() {
       .catch((error) => {
         console.error(
           "Error fetching reservations:",
-          error.response?.data || error.message
+          error.response?.data || error.message,
         );
         setLoading(false);
       });
@@ -40,15 +40,15 @@ export default function AdminReservation() {
           prevReservations.map((reservation) =>
             reservation._id === reservationId
               ? { ...reservation, status: newStatus }
-              : reservation
-          )
+              : reservation,
+          ),
         );
         alert("Status updated successfully!");
       })
       .catch((error) => {
         console.error(
           "Error updating status:",
-          error.response?.data || error.message
+          error.response?.data || error.message,
         );
         alert("Failed to update status. Please try again.");
       });
@@ -137,8 +137,8 @@ export default function AdminReservation() {
                         reservation.status === "reserved"
                           ? "bg-green-200 text-green-800"
                           : reservation.status === "cancelled"
-                          ? "bg-red-200 text-red-800"
-                          : "bg-gray-200 text-gray-800"
+                            ? "bg-red-200 text-red-800"
+                            : "bg-gray-200 text-gray-800"
                       }`}
                     >
                       {reservation.status}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Layout from "../../components/layout/layout";
@@ -8,17 +8,42 @@ import useAuthStore from "../../store/auth-store";
 import { Button } from "../../components/ui/button";
 import DeleteAccountButton from "../../components/profile/DeleteAccount";
 import PageLoading from "../../components/PageLoading";
+import { AnimatePresence } from "framer-motion";
 
 const formVariants = {
   initial: {
     opacity: 0,
-    y: 10,
+    y: -10,
   },
   animate: {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.1,
+      duration: 0.2,
+      ease: [0.23, 1, 0.32, 1],
+      staggerChildren: 0.1, // Add staggerChildren to create a staggered animation effect
+    },
+  },
+};
+
+const itemVariants = {
+  initial: {
+    opacity: 0,
+    y: -10,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      ease: [0.23, 1, 0.32, 1],
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: -10,
+    transition: {
+      duration: 0.5,
       ease: [0.23, 1, 0.32, 1],
     },
   },
@@ -32,6 +57,7 @@ export default function Profile() {
     confirmPassword: "",
   });
   const [passwordError, setPasswordError] = useState("");
+  const [showSaveButton, setShowSaveButton] = useState(false);
   const { setUser, user } = useAuthStore();
 
   const handleSaveChanges = () => {
@@ -138,7 +164,7 @@ export default function Profile() {
   });
 
   // Populate the form with profile data once it's loaded
-  React.useEffect(() => {
+  useEffect(() => {
     if (profileData) {
       setData({
         name: profileData.name,
@@ -165,6 +191,22 @@ export default function Profile() {
     }
   };
 
+  useEffect(() => {
+    const responseData = JSON.stringify({
+      name: profileData?.name,
+      email: profileData?.email,
+      phone: profileData?.phone,
+      image: profileData?.image,
+    });
+    const formProfile = JSON.stringify(data);
+    console.log(responseData, formProfile);
+    if (responseData === formProfile) {
+      setShowSaveButton(false);
+    } else {
+      setShowSaveButton(true);
+    }
+  }, [profileData, data]);
+
   return (
     <Layout>
       {isPending ? (
@@ -174,19 +216,42 @@ export default function Profile() {
           className="flex justify-center items-center p-6 bg-white"
           initial="initial"
           animate="animate"
-          variants={{
-            initial: { opacity: 0, y: 20 },
-            animate: { opacity: 1, y: 0, transition: { duration: 0.6 } },
-          }}
+          variants={formVariants}
         >
-          <div className="w-[700px] p-6">
+          <motion.div className="w-[700px] p-6" variants={itemVariants}>
             {/* Heading */}
-            <motion.h1 className="text-2xl font-bold mb-6 text-gray-900">
-              Your Profile
-            </motion.h1>
+            <motion.div
+              className="flex items-center mb-6 justify-between"
+              variants={itemVariants}
+            >
+              {/* Save Changes Button */}
 
+              <motion.h1
+                className="text-2xl font-bold text-gray-900"
+                variants={itemVariants}
+              >
+                Your Profile
+              </motion.h1>
+
+              <AnimatePresence>
+                {showSaveButton && (
+                  <motion.button
+                    className="w-fit px-2  bg-red-500 text-white font-semibold py-2 rounded-md hover:bg-red-600 transition-all duration-200"
+                    onClick={handleSaveChanges}
+                    whileTap={{ scale: 0.98 }}
+                    disabled={saving}
+                    variants={itemVariants}
+                  >
+                    {saving ? "Saving..." : "Save Changes"}
+                  </motion.button>
+                )}
+              </AnimatePresence>
+            </motion.div>
             {/* Profile Image Upload */}
-            <div className="mb-6 flex items-center gap-4">
+            <motion.div
+              className="mb-6 flex items-center gap-4"
+              variants={itemVariants}
+            >
               <label
                 htmlFor="imageUpload"
                 className="w-24 h-24 rounded-full overflow-hidden border shadow-sm cursor-pointer relative"
@@ -210,10 +275,10 @@ export default function Profile() {
                   className="absolute inset-0 opacity-0 cursor-pointer"
                 />
               </label>
-            </div>
+            </motion.div>
 
             {/* Name Field */}
-            <div className="mb-4">
+            <motion.div className="mb-4" variants={itemVariants}>
               <label
                 htmlFor="name"
                 className="block text-sm font-medium text-gray-700"
@@ -228,10 +293,10 @@ export default function Profile() {
                 onChange={handelname}
                 className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
               />
-            </div>
+            </motion.div>
 
             {/* Email Field */}
-            <div className="mb-4">
+            <motion.div className="mb-4" variants={itemVariants}>
               <label
                 htmlFor="email"
                 className="block text-sm font-medium text-gray-700"
@@ -247,10 +312,10 @@ export default function Profile() {
                 onChange={handelemail}
                 className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
               />
-            </div>
+            </motion.div>
 
             {/* Phone Field */}
-            <div className="mb-4">
+            <motion.div className="mb-4" variants={itemVariants}>
               <label
                 htmlFor="phone"
                 className="block text-sm font-medium text-gray-700"
@@ -265,14 +330,14 @@ export default function Profile() {
                 onChange={(e) => setData({ ...data, phone: e.target.value })}
                 className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400"
               />
-            </div>
+            </motion.div>
             {/* Password Fields */}
-            <motion.div className="mt-5 mb-2">
+            <motion.div className="mt-5 mb-2" variants={itemVariants}>
               <label className="block text-lg font-medium text-gray-700">
                 Update Password
               </label>
               <div className="grid mt-5 gap-3 grid-cols-2">
-                <div className="mb-4">
+                <motion.div className="mb-4" variants={itemVariants}>
                   <label
                     htmlFor="newPassword"
                     className="block text-sm font-medium text-gray-700"
@@ -287,9 +352,9 @@ export default function Profile() {
                     placeholder="New Password"
                     className="mt-1 block w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
                   />
-                </div>
+                </motion.div>
 
-                <div className="mb-4">
+                <motion.div className="mb-4" variants={itemVariants}>
                   <label
                     htmlFor="confirmPassword"
                     className="block text-sm font-medium text-gray-700"
@@ -304,8 +369,8 @@ export default function Profile() {
                     placeholder="Confirm New Password"
                     className="mt-1 block w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
                   />
-                </div>
-                <div className="mb-4">
+                </motion.div>
+                <motion.div className="mb-4" variants={itemVariants}>
                   <label
                     htmlFor="currentPassword"
                     className="block text-sm font-medium text-gray-700"
@@ -320,33 +385,38 @@ export default function Profile() {
                     placeholder="Current Password"
                     className="mt-1 block w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
                   />
-                </div>
+                </motion.div>
               </div>
 
               {passwordError && (
-                <p className="text-red-500 text-sm">{passwordError}</p>
+                <motion.p
+                  className="text-red-500 text-sm"
+                  variants={itemVariants}
+                >
+                  {passwordError}
+                </motion.p>
               )}
 
-              <Button
-                variant="secondary"
-                className="w-1/2 my-5  items-center justify-center  py-2 rounded-md  transition-all duration-200"
-                onClick={handlePasswordUpdate}
-                whileTap={{ scale: 0.98 }}
-              >
-                Update Password
-              </Button>
+              {passwordData?.newPassword?.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex items-center justify-between"
+                >
+                  <Button
+                    variant="outline"
+                    className="w-1/2 my-5  items-center justify-center  py-2 rounded-md  transition-all duration-200"
+                    onClick={handlePasswordUpdate}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Update Password
+                  </Button>
+                </motion.div>
+              )}
             </motion.div>
-            {/* Save Changes Button */}
-            <motion.button
-              className="w-full my-6 bg-red-500 text-white font-semibold py-2 rounded-md hover:bg-red-600 transition-all duration-200"
-              onClick={handleSaveChanges}
-              whileTap={{ scale: 0.98 }}
-              disabled={saving}
-            >
-              {saving ? "Saving..." : "Save Changes"}
-            </motion.button>
             <DeleteAccountButton />
-          </div>
+          </motion.div>
         </motion.div>
       )}
     </Layout>
