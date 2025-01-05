@@ -32,8 +32,9 @@ export default function AddRestaurant() {
 
     const data = new FormData();
     data.append("name", formData.name);
-    data.append("location", formData.location);
-    data.append("cuisine", formData.cuisine);
+    data.append("address", formData.location);
+    data.append("categories", formData.cuisine);
+    data.append("phone", "1234567890");
     if (formData.image) {
       data.append("image", formData.image);
     }
@@ -43,6 +44,7 @@ export default function AddRestaurant() {
       .post("restaurants/create", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          token: localStorage.getItem("token"),
         },
       })
       .then((response) => {

@@ -25,12 +25,11 @@ export default function Navbar() {
   return (
     <div className="sticky top-0 z-[20] bg-white">
       <div className="flex px-10 gap-9 border-b py-4">
-        <div className="flex items-center space-x-4">
-          <img src={Logo} alt="page logo" className="w-8 h-8" />
-          <Link to={"/"} className="text-xl font-bold">
-            Foodie
-          </Link>
-        </div>
+        <Link to={"/"} className="flex items-center space-x-2 text-red-600">
+          <span className="text-2xl font-bold font-OkineSans">Ihjiz</span>{" "}
+          <span>|</span>
+          <span className="text-2xl font-bold font-Arab">احجز</span>
+        </Link>
 
         <div className="flex flex-grow justify-end   items-center gap-9">
           {links.map((link, index) => (

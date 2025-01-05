@@ -252,7 +252,7 @@ export default function SignUp() {
                   value="restaurantOwner"
                   checked={data.role === "restaurantOwner"}
                   onChange={(e) => setData({ ...data, role: e.target.value })}
-                  className="form-radio text-red-500"
+                  className="form-radio text-red-600"
                 />
                 <span>Owner</span>
               </label>

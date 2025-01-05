@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import api from "../../lib/apiInstance";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import Layout from "../../components/layout/layout";
-import React, { memo, useCallback, useMemo } from "react";
+import React, { memo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./slider.styles.css";
 import {
@@ -11,9 +11,7 @@ import {
   MapPin,
   Star,
   Clock,
-  Umbrella,
   UtensilsCrossed,
-  DollarSign,
   ArrowUpDown,
 } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -27,7 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useEffect, useRef } from "react";
-import Loading from "@/components/Loading";
+import PageLoading from "../../components/PageLoading";
 
 // Animation variants
 const containerVariants = {
@@ -185,7 +183,7 @@ const ExplorePage = () => {
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } =
     useInfiniteQuery({
-      queryKey: ["restaurants", ...Array.from(searchParams.entries())],
+      queryKey: ["restaurants", ...Array.from(searchParams?.entries())],
       queryFn: ({ pageParam = 1 }) =>
         api.get(`/restaurants?${searchParams?.toString()}&page=${pageParam}`),
       getNextPageParam: (lastPage) => {
@@ -447,12 +445,12 @@ const ExplorePage = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
               >
-                <Loading />
+                <PageLoading />
               </motion.div>
             ) : (
               <>
                 <motion.div
-                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 cursor-pointer"
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 "
                   variants={containerVariants}
                   initial="initial"
                   animate="animate"
@@ -469,7 +467,7 @@ const ExplorePage = () => {
                         initial="initial"
                         animate="animate"
                         whileHover={{ y: -5 }}
-                        className="bg-white rounded-xl shadow overflow-hidden hover:shadow-lg transition-shadow"
+                        className="bg-white rounded-xl shadow overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
                       >
                         <motion.img
                           initial={{ opacity: 0, scale: 1.1 }}
@@ -510,7 +508,7 @@ const ExplorePage = () => {
                             <motion.button
                               whileHover={{ scale: 1.05 }}
                               whileTap={{ scale: 0.95 }}
-                              className="px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors cursor-pointer"
+                              className="px-4 py-2 bg-red-500 text-white rounded-xl font-bold hover:bg-red-600 transition-colors cursor-pointer"
                             >
                               Book Now
                             </motion.button>

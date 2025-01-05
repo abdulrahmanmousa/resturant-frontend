@@ -7,6 +7,8 @@ export default {
     extend: {
       fontFamily: {
         Epilogue: ["Epilogue", "sans-serif"],
+        Arab: ["Arab", "sans-serif"],
+        OkineSans: ["OkineSans", "sans-serif"],
       },
       borderRadius: {
         lg: "var(--radius)",

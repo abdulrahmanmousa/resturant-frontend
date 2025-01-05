@@ -5,16 +5,16 @@ import { Input } from "@/components/ui/input";
 export default function Footer() {
   return (
     <>
-      <div className="bg-gray-200 grid  ">
+      <div className="text-white bg-red-600 grid">
         <div
           style={{ padding: "20px" }}
-          className=" bg-gray-200 grid grid-cols-2  "
+          className="bg-transparent grid grid-cols-2"
         >
           <div className="p-4 grid-rows-2">
             <div>
-              <div className="  space-y-4">
-                <h1 className=" ">stay connected</h1>
-                <div className="flex w-full max-w-sm items-center   space-x-2">
+              <div className="space-y-4">
+                <h1 className="">Stay Connected</h1>
+                <div className="flex w-full max-w-sm items-center space-x-2">
                   <Input
                     className="bg-white"
                     type="email"
@@ -46,19 +46,19 @@ export default function Footer() {
             </div>
           </div>
           <div className="grid grid-cols-4">
-            <div className="bg-gray-200 p-4">
+            <div className="p-4">
               <h1 className="text-lg font-bold">About Us</h1>
               <p className="text-sm">
                 We are a team of developers who are passionate about food and
                 technology
               </p>
             </div>
-            <div className="bg-gray-200 p-4">
+            <div className="p-4">
               <h1 className="text-lg font-bold">Contact Us</h1>
-              <p className="text-sm">Email:foodie@gmail.com</p>
-              <p className="text-sm">Phone:123-456-789</p>
+              <p className="text-sm">Email: foodie@gmail.com</p>
+              <p className="text-sm">Phone: 123-456-789</p>
             </div>
-            <div className="bg-gray-200 p-4">
+            <div className="p-4">
               <h1 className="text-lg font-bold">Follow Us</h1>
               <a href="https://www.facebook.com" className="text-sm">
                 Facebook
@@ -72,16 +72,15 @@ export default function Footer() {
                 Twitter
               </a>
             </div>
-            <div className="bg-gray-200 p-4">
+            <div className="p-4">
               <h1 className="text-lg font-bold">Address</h1>
-              <p className="text-sm">12, galaa Street, mansoura City</p>
-              <p className="text-sm">PQR State, STU mansoura</p>
+              <p className="text-sm">12, Galaa Street, Mansoura City</p>
+              <p className="text-sm">PQR State, STU Mansoura</p>
             </div>
           </div>
         </div>
-        <hr className=" m-10 my-4 border-gray-300" />
         <div className="p-4 text-center">
-          <h1>table booker</h1>
+          <h1>Table Booker</h1>
         </div>
 
         <div className="p-4 text-center">

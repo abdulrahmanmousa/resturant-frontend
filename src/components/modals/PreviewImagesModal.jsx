@@ -1,8 +1,10 @@
+import { useEffect, useRef } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ReactPhotoSphereViewer } from "react-photo-sphere-viewer";
 
 const ImagesModal = ({ attachments }) => {
   const [activePreviewAttachments, setActivePreviewAttachments] = useState([]);
@@ -28,7 +30,7 @@ const ImagesModal = ({ attachments }) => {
     activePreviewAttachments,
     activeIndexPreviewAttachments,
     "hello",
-    attachments
+    attachments,
   );
 
   return (
@@ -55,7 +57,7 @@ const ImagesModal = ({ attachments }) => {
               <button
                 key={attachment.id}
                 onClick={() => handleClickOnAttachment(index)}
-                className="relative  rounded-xl overflow-hidden"
+                className="relative   rounded-xl overflow-hidden"
               >
                 <div
                   className={`absolute w-full h-full rounded-[10px] top-0 left-0  hover:bg-black/70  transition-all ${
@@ -82,7 +84,7 @@ const AttachmentPreview = ({ attachment, isBlurred = false }) => {
   const renderContent = () => {
     return (
       <img
-        className={`aspect-square w-full  rounded-[10px] object-cover cursor-pointer ${
+        className={`aspect-square w-full max-w-[300px]  rounded-[10px] object-cover cursor-pointer ${
           isBlurred ? "blur-[2px] scale-105" : ""
         }`}
         src={attachment}
@@ -96,24 +98,30 @@ const AttachmentPreview = ({ attachment, isBlurred = false }) => {
 function AttachmentsPreview({ attachments, currentIndex, setCurrentIndex }) {
   const goToPrevious = () => {
     setCurrentIndex(
-      currentIndex > 0 ? currentIndex - 1 : attachments.length - 1
+      currentIndex > 0 ? currentIndex - 1 : attachments.length - 1,
     );
   };
 
   const goToNext = () => {
     setCurrentIndex(
-      currentIndex < attachments.length - 1 ? currentIndex + 1 : 0
+      currentIndex < attachments.length - 1 ? currentIndex + 1 : 0,
     );
   };
 
+  const photoSphereRef = useRef(null);
   const renderFilePreview = (file) => {
     return (
-      <img
+      <ReactPhotoSphereViewer
+        ref={photoSphereRef}
+        className="rounded-lg overflow-hidden"
         src={file}
-        alt={file}
-        width={1000}
-        height={600}
-        className="w-full h-full object-cover rounded-[20px]"
+        littlePlanet={true}
+        lang={{
+          littlePlanetButton: "Little Planet",
+        }}
+        hideNavbarButton={true}
+        width={"100%"}
+        height={"70vh"}
       />
     );
   };

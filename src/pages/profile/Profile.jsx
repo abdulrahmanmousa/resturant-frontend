@@ -5,9 +5,9 @@ import Layout from "../../components/layout/layout";
 import api from "../../lib/apiInstance";
 import { toast } from "sonner";
 import useAuthStore from "../../store/auth-store";
-import Loading from "../../components/Loading";
 import { Button } from "../../components/ui/button";
 import DeleteAccountButton from "../../components/profile/DeleteAccount";
+import PageLoading from "../../components/PageLoading";
 
 const formVariants = {
   initial: {
@@ -66,10 +66,10 @@ export default function Profile() {
         console.error("Error response:", error.response);
         toast.error(
           error.response?.data?.message ||
-            "An error occurred while updating the profile."
+            "An error occurred while updating the profile.",
         );
       },
-    }
+    },
   );
 
   const handlePasswordChange = (e) => {
@@ -100,7 +100,7 @@ export default function Profile() {
           headers: {
             token: localStorage.getItem("token"), // Include token in headers
           },
-        }
+        },
       )
       .then((response) => {
         toast.success("Password updated successfully!");
@@ -168,7 +168,7 @@ export default function Profile() {
   return (
     <Layout>
       {isPending ? (
-        <Loading />
+        <PageLoading />
       ) : (
         <motion.div
           className="flex justify-center items-center p-6 bg-white"
