@@ -15,6 +15,9 @@ import ForgetPassword from "./pages/auth/forget-password";
 import Profile from "./pages/auth/profile";
 import Explore from "./pages/user/explore/explore";
 import ProtectedRoute from "./components/ProtectedRoute";
+import OwnerMeals from "./pages/owner/meals/OwnerMeals";
+import Reviews from "./pages/owner/reviews/Reviews";
+import Tables from "./pages/owner/tables/Tables";
 
 // Define the Users component
 function Users() {
@@ -45,6 +48,10 @@ function App() {
             <Route path="/restaurants" element={<Restaurants />} />
             <Route path="/restaurants/:id" element={<Restaurant />} />
             <Route path="/owner/reservations" element={<AdminReservations />} />
+            <Route path="/owner/meals" element={<OwnerMeals />} />
+            <Route path="/owner/reviews" element={<Reviews />} />
+            <Route path="/owner/tables" element={<Tables />} />
+
             <Route path="/user/reservations" element={<UserReservations />} />
 
             <Route path="/profile" element={<Profile />} />
