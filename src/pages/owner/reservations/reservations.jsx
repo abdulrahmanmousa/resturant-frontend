@@ -1,198 +1,202 @@
-import React, { useEffect, useState } from "react";
-import api from "../../../lib/apiInstance";
+import PageLoading from "@/components/PageLoading";
+import { useEffect, useState } from "react";
 import moment from "moment";
-import Layout from "../../../components/layout/layout";
-import { useParams } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown, User, Calendar, Clock, Utensils } from "lucide-react";
+import Layout from "@/components/layout/layout";
+import api from "@/lib/apiInstance";
 
 export default function AdminReservations() {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
-  //   const restaurantId = useParams()
   const restaurantId = JSON.parse(localStorage.getItem("user")).restaurant;
-  // Fetch reservations from the API
+
   useEffect(() => {
-    api
-      .get(`/reservations/restaurant/${restaurantId}`, {
-        headers: {
-          restaurantId: JSON.parse(localStorage.getItem("user")).restaurant, // Parse user object to access the restaurant ID
-          token: localStorage.getItem("token"), // Include token in headers
-        },
-      }) // Using the relative path with api instance
-      .then((response) => {
-        setReservations(response.data.reservations); // Assuming reservations key in the response
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error(
-          "Error fetching reservations:",
-          error.response?.data || error.message
-        );
-        setLoading(false);
-      });
+    fetchReservations();
   }, []);
 
-  // Handle status updates
-  const updateStatus = (reservationId, newStatus) => {
-    api
-      .patch(
+  const fetchReservations = async () => {
+    try {
+      const response = await api.get(
+        `/reservations/restaurant/${restaurantId}`,
+        {
+          headers: {
+            restaurantId: restaurantId,
+            token: localStorage.getItem("token"),
+          },
+        },
+      );
+      setReservations(response.data.reservations);
+      setLoading(false);
+    } catch (error) {
+      console.error(
+        "Error fetching reservations:",
+        error.response?.data || error.message,
+      );
+      setLoading(false);
+    }
+  };
+
+  const updateStatus = async (reservationId, newStatus) => {
+    try {
+      await api.patch(
         `/reservations/status/${reservationId}`,
         { status: newStatus },
         {
           headers: {
-            restaurantId: JSON.parse(localStorage.getItem("user")).restaurant, // Parse user object to access the restaurant ID
-            token: localStorage.getItem("token"), // Include token in headers
+            restaurantId: restaurantId,
+            token: localStorage.getItem("token"),
           },
-        }
-      )
-      .then((response) => {
-        setReservations((prevReservations) =>
-          prevReservations.map((reservation) =>
-            reservation._id === reservationId
-              ? { ...reservation, status: newStatus }
-              : reservation
-          )
-        );
-        alert("Status updated successfully!");
-      })
-      .catch((error) => {
-        console.error(
-          "Error updating status:",
-          error.response?.data || error.message
-        );
-        alert("Failed to update status. Please try again.");
-      });
+        },
+      );
+      setReservations((prevReservations) =>
+        prevReservations.map((reservation) =>
+          reservation._id === reservationId
+            ? { ...reservation, status: newStatus }
+            : reservation,
+        ),
+      );
+    } catch (error) {
+      console.error(
+        "Error updating status:",
+        error.response?.data || error.message,
+      );
+      alert("Failed to update status. Please try again.");
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "reserved":
+        return "bg-green-500";
+      case "canceled":
+        return "bg-red-500";
+      case "completed":
+        return "bg-gray-500";
+      default:
+        return "bg-gray-100";
+    }
   };
 
   if (loading) {
     return (
       <Layout>
-        <div className="text-center mt-10">Loading your reservations...</div>
+        <PageLoading />
       </Layout>
     );
   }
 
+  const cardStyles = {
+    reserved: "bg-green-100",
+    canceled: "bg-red-100",
+    completed: "bg-gray-50",
+  };
   return (
     <Layout>
-      <div className="max-w-6xl mx-auto p-6">
-        <h1 className="text-2xl font-bold mb-6">
-          Admin Reservation Management
-        </h1>
+      <div className="container mx-auto p-6">
+        <h1 className="text-3xl font-bold mb-6">Reservation Management</h1>
         {reservations.length === 0 ? (
-          <div className="text-center text-gray-500">
+          <div className="text-center text-gray-500 text-xl">
             No reservations found.
           </div>
         ) : (
-          <table className="w-full table-auto border-collapse border border-gray-300">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border border-gray-300 px-4 py-2">#</th>
-                <th className="border border-gray-300 px-4 py-2">User</th>
-                <th className="border border-gray-300 px-4 py-2">Table</th>
-                <th className="border border-gray-300 px-4 py-2">Meals</th>
-                <th className="border border-gray-300 px-4 py-2">
-                  Date & Time
-                </th>
-                <th className="border border-gray-300 px-4 py-2">Status</th>
-                <th className="border border-gray-300 px-4 py-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {reservations.map((reservation, index) => (
-                <tr key={reservation._id} className="text-center">
-                  {/* Serial Number */}
-                  <td className="border border-gray-300 px-4 py-2">
-                    {index + 1}
-                  </td>
-
-                  {/* User Details */}
-                  <td className="border border-gray-300 px-4 py-2">
-                    <div>
-                      <p className="font-medium">{reservation.userId.name}</p>
-                      <p className="text-sm text-gray-500">
-                        {reservation.userId.email}
-                      </p>
-                    </div>
-                  </td>
-
-                  {/* Table Details */}
-                  <td className="border border-gray-300 px-4 py-2">
-                    <p>Table #{reservation.tableId.tableNumber}</p>
-                    <p className="text-sm text-gray-500">
-                      Capacity: {reservation.tableId.capacity}
-                    </p>
-                  </td>
-
-                  {/* Meals */}
-                  <td className="border border-gray-300 px-4 py-2">
-                    {reservation.mealId.map((meal, idx) => (
-                      <div key={meal._id}>
-                        <p>
-                          Meal ID: {meal._id}, Quantity: {meal.quantity}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {reservations.map((reservation) => (
+              <Card key={reservation._id} className="overflow-hidden">
+                <CardHeader className={cardStyles[reservation.status]}>
+                  <CardTitle className="flex justify-between items-center">
+                    <span>Table #{reservation.tableId.tableNumber}</span>
+                    <Badge className={getStatusColor(reservation.status)}>
+                      {reservation.status}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-4">
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-2">
+                      <User className="w-5 h-5 text-gray-500" />
+                      <div>
+                        <p className="font-medium">{reservation.userId.name}</p>
+                        <p className="text-sm text-gray-500">
+                          {reservation.userId.email}
                         </p>
                       </div>
-                    ))}
-                  </td>
-
-                  {/* Date & Time */}
-                  <td className="border border-gray-300 px-4 py-2">
-                    <p>{moment(reservation.date).format("MMMM Do, YYYY")}</p>
-                    <p className="text-sm text-gray-500">{reservation.time}</p>
-                  </td>
-
-                  {/* Status */}
-
-                  <td className="border border-gray-300 px-4 py-2">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs ${
-                        reservation.status === "reserved"
-                          ? "bg-green-200 text-green-800"
-                          : reservation.status === "cancelled"
-                          ? "bg-red-200 text-red-800"
-                          : "bg-gray-200 text-gray-800"
-                      }`}
-                    >
-                      {reservation.status}
-                    </span>
-                  </td>
-
-                  {/* Actions */}
-                  <td className="border border-gray-300 px-4 py-2">
-                    {reservation.status !== "canceled" &&
-                      reservation.status !== "completed" && (
-                        <button
-                          onClick={() =>
-                            updateStatus(reservation._id, "canceled")
-                          }
-                          className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600"
-                        >
-                          Cancel
-                        </button>
-                      )}
-                    {/* {reservation.status === "cancelled" && (
-                      <button
-                        onClick={() =>
-                          updateStatus(reservation._id, "reserved")
-                        }
-                        className="bg-yellow-500 text-white px-3 py-1 rounded-md hover:bg-green-600"
-                      >
-                        Restore
-                      </button>
-                    )} */}
-                    {reservation.status === "reserved" && (
-                      <button
-                        onClick={() =>
-                          updateStatus(reservation._id, "completed")
-                        }
-                        className="bg-green-500 mt-2 text-white px-3 py-1 rounded-md hover:bg-red-600"
-                      >
-                        completed
-                      </button>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Calendar className="w-5 h-5 text-gray-500" />
+                      <p>{moment(reservation.date).format("MMMM Do, YYYY")}</p>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Clock className="w-5 h-5 text-gray-500" />
+                      <p>{reservation.time}</p>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Utensils className="w-5 h-5 text-gray-500" />
+                      <p>Capacity: {reservation.tableId.capacity}</p>
+                    </div>
+                    {reservation.mealId?.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="font-medium">Meals:</p>
+                        {reservation.mealId.map((meal) => (
+                          <p key={meal._id} className="text-sm">
+                            {meal?.meal?.name} (x{meal.quantity})
+                          </p>
+                        ))}
+                      </div>
                     )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    {reservation.status !== "completed" &&
+                      reservation.status !== "canceled" && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="w-full">
+                              Update Status{" "}
+                              <ChevronDown className="ml-2 h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-full">
+                            {reservation.status !== "cancelled" && (
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  updateStatus(reservation._id, "canceled")
+                                }
+                              >
+                                Cancel Reservation
+                              </DropdownMenuItem>
+                            )}
+                            {reservation.status === "reserved" && (
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  updateStatus(reservation._id, "completed")
+                                }
+                              >
+                                Mark as Completed
+                              </DropdownMenuItem>
+                            )}
+                            {reservation.status !== "reserved" && (
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  updateStatus(reservation._id, "reserved")
+                                }
+                              >
+                                Restore to Reserved
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         )}
       </div>
     </Layout>
