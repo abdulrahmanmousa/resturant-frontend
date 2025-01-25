@@ -18,6 +18,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import OwnerMeals from "./pages/owner/meals/OwnerMeals";
 import Reviews from "./pages/owner/reviews/Reviews";
 import Tables from "./pages/owner/tables/Tables";
+import UserReviews from "./pages/user/reviews/UserReviews";
 
 // Define the Users component
 function Users() {
@@ -49,7 +50,9 @@ function App() {
             <Route path="/restaurants/:id" element={<Restaurant />} />
             <Route path="/owner/reservations" element={<AdminReservations />} />
             <Route path="/owner/meals" element={<OwnerMeals />} />
-            <Route path="/owner/reviews" element={<Reviews />} />
+            <Route path="/user/reviews" element={<Reviews />} />
+            <Route path="/owner/reviews" element={<UserReviews />} />
+
             <Route path="/owner/tables" element={<Tables />} />
 
             <Route path="/user/reservations" element={<UserReservations />} />

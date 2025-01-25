@@ -8,14 +8,15 @@ export default function Navbar() {
   const UserLinks = [
     { name: "Home", url: "/" },
     { name: "Explore", url: "/explore" },
+    { name: "Reviews", url: "/user/reviews" },
+
     { name: "Restaurants", url: "/restaurants" },
     { name: "Orders", url: "/user/reservations" },
   ];
   const OwnerLinks = [
     { name: "Home", url: "/" },
-    { name: "Reviews", url: "/owner/reviews" },
     { name: "Tables", url: "/owner/tables" },
-
+    { name: "Reviews", url: "/owner/reviews" },
     { name: "Reservation", url: "/owner/reservations" },
     { name: "meals", url: "/owner/meals" },
   ];
