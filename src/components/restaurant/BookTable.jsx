@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { UtensilsCrossed } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { toast } from "sonner";
+import useAuthStore from "../../store/auth-store";
 
 export default function BookTable() {
   const [guestCount, setGuestCount] = useState(null);
@@ -18,9 +19,14 @@ export default function BookTable() {
   );
   const [tableId, setTableId] = useState(null);
   const { id } = useParams(); // Access the route parameter
+  const { user } = useAuthStore();
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (!user) {
+      navigate("/login");
+      return;
+    }
 
     const reservationData = {
       tableId,

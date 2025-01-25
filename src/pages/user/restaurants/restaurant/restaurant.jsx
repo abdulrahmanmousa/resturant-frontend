@@ -11,6 +11,7 @@ import PageLoading from "../../../../components/PageLoading";
 import { useState, useEffect } from "react";
 
 import { RestaurantMealsModal } from "../../../../components/Restaurant/MealsModal";
+import RestaurantReviews from "../../../../components/Restaurant/RestaurantReviews";
 export default function Restaurant() {
   const { id } = useParams();
   const { data, isPending } = useQuery({
@@ -129,52 +130,8 @@ export default function Restaurant() {
             ))}
             <RestaurantMealsModal restaurantId={id} />
           </div>
-          <div className="flex items-start space-x-8 py-10 ">
-            {/* Left Column: Overall Rating */}
-            <div className="flex flex-col items-center">
-              <h2 className="text-5xl font-bold text-gray-800">
-                {restaurant.avgRating.toFixed(1)}
-              </h2>
-              <div className="flex text-red-500 text-2xl mb-1">
-                {Array.from({ length: 5 }, (_, index) => (
-                  <span key={index}>
-                    {restaurant.avgRating >= index + 1
-                      ? "★"
-                      : restaurant.avgRating >= index + 0.5
-                        ? "☆"
-                        : "☆"}
-                  </span>
-                ))}
-              </div>
-              <p className="text-gray-500 text-sm">1,234 reviews</p>
-            </div>
-            {/* Right Column: Rating Bars */}
-            <div className="flex-1 space-y-2  ">
-              {ratings.map((rating) => (
-                <div key={rating.label} className="flex items-center space-x-2">
-                  {/* Rating Number */}
-                  <p className="text-gray-700 font-semibold w-4 text-right">
-                    {rating.label}
-                  </p>
-
-                  {/* Progress Bar */}
-                  <div className="w-1/2 bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-red-500 h-2 rounded-full"
-                      style={{ width: `${rating.percentage}%` }}
-                    ></div>
-                  </div>
-
-                  {/* Percentage */}
-                  <p className="text-gray-500 text-sm w-8">
-                    {rating.percentage}%
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-
           <BookTable />
+          <RestaurantReviews restaurantId={id} />
         </div>
       )}
     </Layout>
