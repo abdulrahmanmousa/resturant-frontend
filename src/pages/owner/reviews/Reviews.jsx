@@ -96,7 +96,11 @@ export default function Reviews() {
     e.preventDefault();
 
     api
-      .post("/reviews/create", newReview)
+      .post("/reviews/create", newReview, {
+        headers: {
+          token: localStorage.getItem("token"),
+        },
+      })
       .then((response) => {
         setReviews([...reviews, response.data.review]); // Add the new review to the list
         setNewReview({ reservationId: "", comment: "", rate: 0 }); // Reset the form
