@@ -1,3 +1,4 @@
+import Loading from "../Loading";
 import { useState } from "react";
 import { useRestaurantReviews } from "@/hooks/useRestaurantReviews";
 import { Star, ChevronLeft, ChevronRight } from "lucide-react";
@@ -7,13 +8,29 @@ import { Button } from "@/components/ui/button";
 const RestaurantReviews = ({ restaurantId }) => {
   const [page, setPage] = useState(1);
   const limit = 10;
-  const { data, isLoading, error } = useRestaurantReviews(restaurantId, {
+  const { data, isPending, error } = useRestaurantReviews(restaurantId, {
     page,
     limit,
   });
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>An error occurred: {error.message}</div>;
+  if (isPending)
+    return (
+      <div>
+        <h1 className="text-5xl font-semibold pt-20 pb-8 text-gray-800 w-full text-center">
+          Reviews
+        </h1>
+        <Loading />
+      </div>
+    );
+  if (error)
+    return (
+      <div>
+        <h1 className="text-5xl font-semibold pt-20 pb-8 text-gray-800 w-full text-center">
+          Reviews
+        </h1>
+        <p className="text-center">No reviews yet for this restaurant.</p>
+      </div>
+    );
 
   const reviews = data?.data?.data || [];
   const paginationInfo = data?.data?.pagination || {

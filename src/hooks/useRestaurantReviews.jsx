@@ -13,5 +13,6 @@ export function useRestaurantReviews(restaurantId, { page, limit }) {
     queryKey: ["restaurantReviews", restaurantId, page, limit],
     queryFn: () => fetchReviews(restaurantId, { page, limit }),
     keepPreviousData: true,
+    retry: 1,
   });
 }
