@@ -25,7 +25,7 @@ export default function AdminReservations() {
       .catch((error) => {
         console.error(
           "Error fetching reservations:",
-          error.response?.data || error.message,
+          error.response?.data || error.message
         );
         setLoading(false);
       });
@@ -34,21 +34,30 @@ export default function AdminReservations() {
   // Handle status updates
   const updateStatus = (reservationId, newStatus) => {
     api
-      .patch(`/reservations/${reservationId}`, { status: newStatus })
+      .patch(
+        `/reservations/status/${reservationId}`,
+        { status: newStatus },
+        {
+          headers: {
+            restaurantId: JSON.parse(localStorage.getItem("user")).restaurant, // Parse user object to access the restaurant ID
+            token: localStorage.getItem("token"), // Include token in headers
+          },
+        }
+      )
       .then((response) => {
         setReservations((prevReservations) =>
           prevReservations.map((reservation) =>
             reservation._id === reservationId
               ? { ...reservation, status: newStatus }
-              : reservation,
-          ),
+              : reservation
+          )
         );
         alert("Status updated successfully!");
       })
       .catch((error) => {
         console.error(
           "Error updating status:",
-          error.response?.data || error.message,
+          error.response?.data || error.message
         );
         alert("Failed to update status. Please try again.");
       });
@@ -131,14 +140,15 @@ export default function AdminReservations() {
                   </td>
 
                   {/* Status */}
+
                   <td className="border border-gray-300 px-4 py-2">
                     <span
                       className={`px-2 py-1 rounded-full text-xs ${
                         reservation.status === "reserved"
                           ? "bg-green-200 text-green-800"
                           : reservation.status === "cancelled"
-                            ? "bg-red-200 text-red-800"
-                            : "bg-gray-200 text-gray-800"
+                          ? "bg-red-200 text-red-800"
+                          : "bg-gray-200 text-gray-800"
                       }`}
                     >
                       {reservation.status}
@@ -147,24 +157,35 @@ export default function AdminReservations() {
 
                   {/* Actions */}
                   <td className="border border-gray-300 px-4 py-2">
-                    {reservation.status !== "cancelled" && (
-                      <button
-                        onClick={() =>
-                          updateStatus(reservation._id, "cancelled")
-                        }
-                        className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600"
-                      >
-                        Cancel
-                      </button>
-                    )}
-                    {reservation.status === "cancelled" && (
+                    {reservation.status !== "canceled" &&
+                      reservation.status !== "completed" && (
+                        <button
+                          onClick={() =>
+                            updateStatus(reservation._id, "canceled")
+                          }
+                          className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600"
+                        >
+                          Cancel
+                        </button>
+                      )}
+                    {/* {reservation.status === "cancelled" && (
                       <button
                         onClick={() =>
                           updateStatus(reservation._id, "reserved")
                         }
-                        className="bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600"
+                        className="bg-yellow-500 text-white px-3 py-1 rounded-md hover:bg-green-600"
                       >
                         Restore
+                      </button>
+                    )} */}
+                    {reservation.status === "reserved" && (
+                      <button
+                        onClick={() =>
+                          updateStatus(reservation._id, "completed")
+                        }
+                        className="bg-green-500 mt-2 text-white px-3 py-1 rounded-md hover:bg-red-600"
+                      >
+                        completed
                       </button>
                     )}
                   </td>

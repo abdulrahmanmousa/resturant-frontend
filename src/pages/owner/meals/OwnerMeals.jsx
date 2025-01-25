@@ -8,7 +8,7 @@ export default function OwnerMeals() {
     name: "",
     desc: "",
     price: "",
-    restaurantId: "67769fff29bc3a6e219576c2", // Replace with dynamic value if needed
+    restaurantId: JSON.parse(localStorage.getItem("user")).restaurant, // Replace with dynamic value if needed
     image: null,
   });
   const [editMeal, setEditMeal] = useState(null); // Meal to edit
@@ -156,6 +156,59 @@ export default function OwnerMeals() {
     <Layout>
       <div className="max-w-6xl mx-auto p-6">
         <h1 className="text-2xl font-bold mb-6">Owner Meals</h1>
+        {/* Add New Meal Form */}
+        <div>
+          <h2 className="text-xl font-semibold mb-4">Add a New Meal</h2>
+          <form onSubmit={handleAddMeal} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium">Meal Name</label>
+              <input
+                type="text"
+                name="name"
+                value={newMeal.name}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium">Description</label>
+              <textarea
+                name="desc"
+                value={newMeal.desc}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+                required
+              ></textarea>
+            </div>
+            <div>
+              <label className="block text-sm font-medium">Price</label>
+              <input
+                type="number"
+                name="price"
+                value={newMeal.price}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium">Image</label>
+              <input
+                type="file"
+                name="image"
+                onChange={handleImageUpload}
+                className="w-full"
+              />
+            </div>
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Add Meal
+            </button>
+          </form>
+        </div>
 
         {/* Meal List */}
         <div className="mb-8">
@@ -231,60 +284,6 @@ export default function OwnerMeals() {
               ))}
             </ul>
           )}
-        </div>
-
-        {/* Add New Meal Form */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Add a New Meal</h2>
-          <form onSubmit={handleAddMeal} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium">Meal Name</label>
-              <input
-                type="text"
-                name="name"
-                value={newMeal.name}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium">Description</label>
-              <textarea
-                name="desc"
-                value={newMeal.desc}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-                required
-              ></textarea>
-            </div>
-            <div>
-              <label className="block text-sm font-medium">Price</label>
-              <input
-                type="number"
-                name="price"
-                value={newMeal.price}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium">Image</label>
-              <input
-                type="file"
-                name="image"
-                onChange={handleImageUpload}
-                className="w-full"
-              />
-            </div>
-            <button
-              type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
-              Add Meal
-            </button>
-          </form>
         </div>
       </div>
     </Layout>

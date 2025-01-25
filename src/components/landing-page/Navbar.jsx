@@ -5,14 +5,23 @@ import { Link, useNavigate } from "react-router-dom";
 import Logo from "@/assets/logo.svg";
 
 export default function Navbar() {
-  const links = [
+  const UserLinks = [
     { name: "Home", url: "/" },
     { name: "Explore", url: "/explore" },
     { name: "Restaurants", url: "/restaurants" },
     { name: "Orders", url: "/user/reservations" },
   ];
+  const OwnerLinks = [
+    { name: "Home", url: "/" },
+    { name: "Reviews", url: "/owner/reviews" },
+    { name: "Tables", url: "/owner/tables" },
+
+    { name: "Reservation", url: "/owner/reservations" },
+    { name: "meals", url: "/owner/meals" },
+  ];
 
   const { user, setUser } = useAuthStore();
+  const links = user?.role === "restaurantOwner" ? OwnerLinks : UserLinks;
 
   const handleLogout = () => {
     localStorage.removeItem("token");

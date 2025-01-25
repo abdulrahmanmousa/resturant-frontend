@@ -17,6 +17,7 @@ import api from "../../../../lib/apiInstance";
 import TableAvailability from "../../../../components/restaurant/TableAvailability";
 import BookTable from "../../../../components/restaurant/BookTable";
 import PageLoading from "../../../../components/PageLoading";
+import { useState, useEffect } from "react";
 
 export default function Restaurant() {
   const { id } = useParams();
@@ -43,33 +44,55 @@ export default function Restaurant() {
     { id: "3", name: "Table 3", capacity: 2 },
     { id: "4", name: "Table 4", capacity: 8 },
   ];
-  const menu = [
-    {
-      name: "Margherita Pizza",
-      price: "$15.99",
-      image: "https://example.com/images/margherita.jpg",
-    },
-    {
-      name: "Cheeseburger",
-      price: "$12.49",
-      image: "https://example.com/images/cheeseburger.jpg",
-    },
-    {
-      name: "Caesar Salad",
-      price: "$9.99",
-      image: "https://example.com/images/caesar-salad.jpg",
-    },
-    {
-      name: "Spaghetti Carbonara",
-      price: "$14.99",
-      image: "https://example.com/images/carbonara.jpg",
-    },
-    {
-      name: "Chocolate Cake",
-      price: "$6.99",
-      image: "https://example.com/images/chocolate-cake.jpg",
-    },
-  ];
+  const [menu, setmenu] = useState();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api
+      .get(`/meals/restaurant/${id}`, {
+        headers: {
+          token: localStorage.getItem("token"), // Include token in headers
+        },
+      })
+      .then((response) => {
+        setmenu(response.data.meals); // Assuming `meals` is the key in the response
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error(
+          "Error fetching meals:",
+          error.response?.data || error.message
+        );
+        setLoading(false);
+      });
+  }, []);
+  // const menu = [
+  //   {
+  //     name: "Margherita Pizza",
+  //     price: "$15.99",
+  //     image: "https://example.com/images/margherita.jpg",
+  //   },
+  //   {
+  //     name: "Cheeseburger",
+  //     price: "$12.49",
+  //     image: "https://example.com/images/cheeseburger.jpg",
+  //   },
+  //   {
+  //     name: "Caesar Salad",
+  //     price: "$9.99",
+  //     image: "https://example.com/images/caesar-salad.jpg",
+  //   },
+  //   {
+  //     name: "Spaghetti Carbonara",
+  //     price: "$14.99",
+  //     image: "https://example.com/images/carbonara.jpg",
+  //   },
+  //   {
+  //     name: "Chocolate Cake",
+  //     price: "$6.99",
+  //     image: "https://example.com/images/chocolate-cake.jpg",
+  //   },
+  // ];
 
   return (
     <Layout>
@@ -104,7 +127,7 @@ export default function Restaurant() {
           <div className="bg-white space-y-8">
             <ImagesModal
               attachments={restaurant.galleryImages.map(
-                (img) => img.secure_url,
+                (img) => img.secure_url
               )}
             />
 
@@ -136,7 +159,7 @@ export default function Restaurant() {
                 className="flex items-center space-x-4 border p-4 rounded-xl shadow-sm"
               >
                 <img
-                  src={item.image}
+                  src={item.image.secure_url}
                   alt={item.name}
                   className="w-12 h-12 rounded-full"
                 />
@@ -175,8 +198,8 @@ export default function Restaurant() {
                     {restaurant.avgRating >= index + 1
                       ? "★"
                       : restaurant.avgRating >= index + 0.5
-                        ? "☆"
-                        : "☆"}
+                      ? "☆"
+                      : "☆"}
                   </span>
                 ))}
               </div>
