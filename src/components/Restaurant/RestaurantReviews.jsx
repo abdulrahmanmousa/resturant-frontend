@@ -177,5 +177,4 @@ const RestaurantReviews = ({ restaurantId }) => {
     </div>
   );
 };
-
 export default RestaurantReviews;

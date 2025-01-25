@@ -50,8 +50,8 @@ function App() {
             <Route path="/restaurants/:id" element={<Restaurant />} />
             <Route path="/owner/reservations" element={<AdminReservations />} />
             <Route path="/owner/meals" element={<OwnerMeals />} />
-            <Route path="/user/reviews" element={<Reviews />} />
-            <Route path="/owner/reviews" element={<UserReviews />} />
+            <Route path="/owner/reviews" element={<Reviews />} />
+            <Route path="/user/reviews" element={<UserReviews />} />
 
             <Route path="/owner/tables" element={<Tables />} />
 
