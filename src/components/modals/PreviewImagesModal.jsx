@@ -144,7 +144,11 @@ function AttachmentsPreview({ attachments, currentIndex, setCurrentIndex }) {
             <ChevronLeft className="w-6 h-6" />
           </Button>
           <div className="w-full max-h-[656px] md:h-[656px] mx-auto mt-4">
-            {renderFilePreview(attachments[currentIndex])}
+            <img
+              src={attachments[currentIndex]}
+              alt={attachments[currentIndex]}
+              className="object-cover w-full h-full"
+            />
           </div>
 
           <Button

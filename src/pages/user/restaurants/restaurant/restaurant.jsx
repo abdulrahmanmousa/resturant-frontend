@@ -3,25 +3,17 @@ import Layout from "../../../../components/layout/layout";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
-import { Phone, Clock, UtensilsCrossed } from "lucide-react";
-import DateTimePicker from "../../../../components/DateTimePicker";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../../../components/ui/select";
+import { Phone, Clock } from "lucide-react";
 import ImagesModal from "../../../../components/modals/PreviewImagesModal";
 import api from "../../../../lib/apiInstance";
-import TableAvailability from "../../../../components/restaurant/TableAvailability";
 import BookTable from "../../../../components/restaurant/BookTable";
 import PageLoading from "../../../../components/PageLoading";
 import { useState, useEffect } from "react";
 
+import { RestaurantMealsModal } from "../../../../components/Restaurant/MealsModal";
 export default function Restaurant() {
   const { id } = useParams();
-  const { data, isPending, error } = useQuery({
+  const { data, isPending } = useQuery({
     queryFn: () =>
       api.get(`/restaurants/${id}`).then((res) => res.data.restaurant),
     queryKey: ["restaurant", id],
@@ -38,18 +30,12 @@ export default function Restaurant() {
     { label: 1, percentage: 5 },
   ];
 
-  const tables = [
-    { id: "1", name: "Table 1", capacity: 4 },
-    { id: "2", name: "Table 2", capacity: 6 },
-    { id: "3", name: "Table 3", capacity: 2 },
-    { id: "4", name: "Table 4", capacity: 8 },
-  ];
   const [menu, setmenu] = useState();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     api
-      .get(`/meals/restaurant/${id}`, {
+      .get(`/meals/restaurant/${id}?limit=5`, {
         headers: {
           token: localStorage.getItem("token"), // Include token in headers
         },
@@ -61,39 +47,11 @@ export default function Restaurant() {
       .catch((error) => {
         console.error(
           "Error fetching meals:",
-          error.response?.data || error.message
+          error.response?.data || error.message,
         );
         setLoading(false);
       });
   }, []);
-  // const menu = [
-  //   {
-  //     name: "Margherita Pizza",
-  //     price: "$15.99",
-  //     image: "https://example.com/images/margherita.jpg",
-  //   },
-  //   {
-  //     name: "Cheeseburger",
-  //     price: "$12.49",
-  //     image: "https://example.com/images/cheeseburger.jpg",
-  //   },
-  //   {
-  //     name: "Caesar Salad",
-  //     price: "$9.99",
-  //     image: "https://example.com/images/caesar-salad.jpg",
-  //   },
-  //   {
-  //     name: "Spaghetti Carbonara",
-  //     price: "$14.99",
-  //     image: "https://example.com/images/carbonara.jpg",
-  //   },
-  //   {
-  //     name: "Chocolate Cake",
-  //     price: "$6.99",
-  //     image: "https://example.com/images/chocolate-cake.jpg",
-  //   },
-  // ];
-
   return (
     <Layout>
       {isPending ? (
@@ -127,7 +85,7 @@ export default function Restaurant() {
           <div className="bg-white space-y-8">
             <ImagesModal
               attachments={restaurant.galleryImages.map(
-                (img) => img.secure_url
+                (img) => img.secure_url,
               )}
             />
 
@@ -153,7 +111,7 @@ export default function Restaurant() {
           {/* Menu Section */}
           <h2 className="text-2xl font-bold m-6">Menu</h2>
           <div className="grid grid-cols-2 gap-4">
-            {menu.map((item, index) => (
+            {menu?.map((item, index) => (
               <div
                 key={index}
                 className="flex items-center space-x-4 border p-4 rounded-xl shadow-sm"
@@ -165,28 +123,13 @@ export default function Restaurant() {
                 />
                 <div>
                   <h3 className="font-bold text-gray-800">{item.name}</h3>
-                  <p className="text-gray-600">{item.price}</p>
+                  <p className="text-gray-600">{item.price}$</p>
                 </div>
               </div>
             ))}
+            <RestaurantMealsModal restaurantId={id} />
           </div>
           <div className="flex items-start space-x-8 py-10 ">
-            {/* Categories */}
-            {/* {restaurant.categories?.length > 0 && (
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold mb-2">Categories</h2>
-              <div className="flex flex-wrap space-x-4">
-                {restaurant.categories.map((category, index) => (
-                  <span
-                    key={index}
-                    className="px-4 py-2 bg-gray-200 rounded-full text-gray-700"
-                  >
-                    {category}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )} */}
             {/* Left Column: Overall Rating */}
             <div className="flex flex-col items-center">
               <h2 className="text-5xl font-bold text-gray-800">
@@ -198,8 +141,8 @@ export default function Restaurant() {
                     {restaurant.avgRating >= index + 1
                       ? "★"
                       : restaurant.avgRating >= index + 0.5
-                      ? "☆"
-                      : "☆"}
+                        ? "☆"
+                        : "☆"}
                   </span>
                 ))}
               </div>

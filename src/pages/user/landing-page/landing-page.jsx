@@ -13,7 +13,9 @@ export default function LandingPage() {
       <Swiper />
       <Recommended_res />
       <FeaturedDishes />
+      {/* 
       <Rates />
+      */}
     </Layout>
   );
 }
