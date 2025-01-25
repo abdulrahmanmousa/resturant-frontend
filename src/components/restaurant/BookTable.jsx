@@ -73,8 +73,8 @@ export default function BookTable() {
 
   return (
     <>
-      <div className="w-3/4 mx-auto relative gap-2">
-        <h1 className="text-4xl font-bold text-center text-gray-800">
+      <div className="w-3/4 mx-auto relative gap-2 pt-10">
+        <h1 className="text-4xl font-bold text-center py-4 text-gray-800">
           Table Availability
         </h1>
         <img

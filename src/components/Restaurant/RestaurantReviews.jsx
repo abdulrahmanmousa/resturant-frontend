@@ -22,27 +22,30 @@ const RestaurantReviews = ({ restaurantId }) => {
     totalReviews: 0,
     limit: 10,
   };
+  const ratings = data?.data?.ratings || [];
+  const avgRating = data?.data?.avgRating || 0;
 
-  const avgRating =
-    reviews.reduce((sum, review) => sum + review.rate, 0) / reviews.length;
+  const totalRatings = ratings.reduce((sum, rating) => sum + rating.count, 0);
 
-  const ratingCounts = reviews.reduce((acc, review) => {
-    acc[review.rate] = (acc[review.rate] || 0) + 1;
-    return acc;
-  }, {});
-
-  const ratings = [5, 4, 3, 2, 1].map((rating) => ({
-    label: rating,
-    percentage: Math.round(
-      ((ratingCounts[rating] || 0) / reviews.length) * 100,
-    ),
-  }));
+  const ratingPercentages = [5, 4, 3, 2, 1].map((rating) => {
+    const ratingData = ratings.find((r) => r._id === rating);
+    return {
+      label: rating,
+      percentage: ratingData
+        ? Math.round((ratingData.count / totalRatings) * 100)
+        : 0,
+    };
+  });
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-start space-x-8 pt-20 pb-4">
+    <div className="space-y-4 ">
+      <h1 className="text-5xl font-semibold pt-20 pb-8 text-gray-800 w-full text-center">
+        Reviews
+      </h1>
+
+      <div className="flex items-start space-x-8  pb-4">
         {/* Left Column: Overall Rating */}
-        <div className="flex flex-col items-start">
+        <div className="flex flex-col items-center mt-5 ">
           <h2 className="text-5xl font-bold text-gray-800">
             {avgRating.toFixed(1)}
           </h2>
@@ -66,7 +69,7 @@ const RestaurantReviews = ({ restaurantId }) => {
         </div>
         {/* Right Column: Rating Bars */}
         <div className="flex-1 space-y-2">
-          {ratings.map((rating) => (
+          {ratingPercentages.map((rating) => (
             <div key={rating.label} className="flex items-center space-x-2">
               {/* Rating Number */}
               <p className="text-gray-700 font-semibold w-4 text-right">
@@ -89,12 +92,12 @@ const RestaurantReviews = ({ restaurantId }) => {
       </div>
 
       {/* Individual Reviews */}
-      <div className="">
+      <div className="space-y-2">
         <h3 className="text-2xl font-semibold text-gray-800">
           Customer Reviews
         </h3>
         {reviews.map((review) => (
-          <div key={review._id} className="bg-white py-6  border-b ">
+          <div key={review._id} className="bg-white py-6 border-b">
             <div className="flex items-center space-x-4 mb-4">
               <Avatar>
                 <AvatarImage
