@@ -1,8 +1,14 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
-import api from "../../../lib/apiInstance";
+import api from "@/lib/apiInstance";
 import moment from "moment";
-import Layout from "../../../components/layout/layout";
-import PageLoading from "../../../components/PageLoading";
+import Layout from "@/components/layout/layout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Utensils, Calendar, Users, Clock } from "lucide-react";
+import PageLoading from "@/components/PageLoading";
+import { Table } from "lucide-react";
 
 export default function UserReservations() {
   const [reservations, setReservations] = useState([]);
@@ -10,15 +16,13 @@ export default function UserReservations() {
 
   // Fetch user reservations
   useEffect(() => {
+    const token = localStorage.getItem("token");
     api
       .get("/reservations/user", {
-        headers: {
-          token: localStorage.getItem("token"), // Include token in headers
-        },
-      }) // API endpoint to get user reservations
-
+        headers: { token },
+      })
       .then((response) => {
-        setReservations(response.data.reservations); // Assuming the API returns reservations in this format
+        setReservations(response.data.reservations);
         setLoading(false);
       })
       .catch((error) => {
@@ -40,78 +44,95 @@ export default function UserReservations() {
 
   return (
     <Layout>
-      <div className="max-w-4xl mx-auto p-6">
-        <h1 className="text-2xl font-bold mb-6">My Reservations</h1>
+      <div className="max-w-6xl mx-auto p-6">
+        <h1 className="text-3xl font-bold mb-6">My Reservations</h1>
         {reservations.length === 0 ? (
-          <div className="text-center text-gray-500">
-            No reservations found.
-          </div>
+          <Card>
+            <CardContent className="flex items-center justify-center h-40">
+              <p className="text-center text-gray-500">
+                No reservations found.
+              </p>
+            </CardContent>
+          </Card>
         ) : (
-          <table className="w-full table-auto border-collapse border border-gray-300">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border border-gray-300 px-4 py-2">#</th>
-                <th className="border border-gray-300 px-4 py-2">Table</th>
-                <th className="border border-gray-300 px-4 py-2">Meals</th>
-                <th className="border border-gray-300 px-4 py-2">
-                  Date & Time
-                </th>
-                <th className="border border-gray-300 px-4 py-2">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {reservations.map((reservation, index) => (
-                <tr key={reservation._id} className="text-center">
-                  {/* Serial Number */}
-                  <td className="border border-gray-300 px-4 py-2">
-                    {index + 1}
-                  </td>
-
-                  {/* Table Details */}
-                  <td className="border border-gray-300 px-4 py-2">
-                    <p>Table #{reservation.tableId.tableNumber}</p>
-                    <p className="text-sm text-gray-500">
-                      Capacity: {reservation.tableId.capacity}
-                    </p>
-                  </td>
-
-                  {/* Meals */}
-                  <td className="border border-gray-300 px-4 py-2">
-                    {reservation.mealId.map((meal) => (
-                      <div key={meal._id}>
-                        <p>
-                          Meal ID: {meal.meal}, Quantity: {meal.quantity}
-                        </p>
-                      </div>
-                    ))}
-                  </td>
-
-                  {/* Date & Time */}
-                  <td className="border border-gray-300 px-4 py-2">
-                    <p>{moment(reservation.date).format("MMMM Do, YYYY")}</p>
-                    <p className="text-sm text-gray-500">{reservation.time}</p>
-                  </td>
-
-                  {/* Status */}
-                  <td className="border border-gray-300 px-4 py-2">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs ${
-                        reservation.status === "reserved"
-                          ? "bg-green-200 text-green-800"
-                          : reservation.status === "cancelled"
-                            ? "bg-red-200 text-red-800"
-                            : "bg-gray-200 text-gray-800"
-                      }`}
-                    >
-                      {reservation.status}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {reservations.map((reservation) => (
+              <ReservationCard
+                key={reservation._id}
+                reservation={reservation}
+              />
+            ))}
+          </div>
         )}
       </div>
     </Layout>
+  );
+}
+
+function ReservationCard({ reservation }) {
+  const cardStyles = {
+    reserved: "bg-green-200",
+    canceled: "bg-red-200",
+    default: "bg-gray-50",
+  };
+  return (
+    <Card className="overflow-hidden">
+      <CardHeader
+        className={cardStyles[reservation.status] || cardStyles.default}
+      >
+        <CardTitle className="flex justify-between items-center">
+          <span>{moment(reservation.date).format("MMM D")}</span>
+          <StatusBadge status={reservation.status} />
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-4 space-y-4">
+        <div className="flex items-center space-x-2">
+          <Calendar className="w-5 h-5 text-gray-500" />
+          <span>{moment(reservation.date).format("MMMM Do, YYYY")}</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Clock className="w-5 h-5 text-gray-500" />
+          <span>{reservation.time}</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Table className="w-5 h-5 text-gray-500" />
+
+          <span>Table No. {reservation.tableId.tableNumber}</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Users className="w-5 h-5 text-gray-500" />
+          <span>Capacity: {reservation.tableId.capacity}</span>
+        </div>
+        {reservation.mealId?.length > 0 && (
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <Utensils className="w-5 h-5 text-gray-500" />
+              <span className="font-semibold">Meals:</span>
+            </div>
+            <ul className="list-disc list-inside pl-5 space-y-1">
+              {reservation.mealId.map((meal) => (
+                <li key={meal._id}>
+                  {meal.meal.name} (x{meal.quantity})
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function StatusBadge({ status }) {
+  const statusStyles = {
+    reserved: "bg-green-100 text-green-800 hover:bg-green-200 capitalize",
+    canceled: "bg-red-100 text-red-800 hover:bg-red-200 capitalize",
+    default: "bg-gray-100 text-gray-800 hover:bg-gray-200 capitalize",
+  };
+
+  return (
+    <Badge className={statusStyles[status] || statusStyles.default}>
+      {status}
+    </Badge>
   );
 }

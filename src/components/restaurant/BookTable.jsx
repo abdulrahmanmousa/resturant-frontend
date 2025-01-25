@@ -1,21 +1,21 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../components/ui/select";
 import api from "../../lib/apiInstance";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { UtensilsCrossed } from "lucide-react";
 import { cn } from "../../lib/utils";
+import { toast } from "sonner";
 
 export default function BookTable() {
   const [guestCount, setGuestCount] = useState(null);
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [time, setTime] = useState(
+    new Date().toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }),
+  );
   const [tableId, setTableId] = useState(null);
   const { id } = useParams(); // Access the route parameter
 
@@ -30,30 +30,37 @@ export default function BookTable() {
       guestCount,
     };
 
-    api
-      .post("/reservations/create", reservationData, {
-        headers: {
-          token: localStorage.getItem("token"),
-        },
-      })
-      .then((response) => {
-        console.log("Reservation Created Successfully:", response.data);
-        alert("Table booked successfully!");
-      })
-      .catch((error) => {
-        console.error(
-          "Error creating reservation:",
-          error.response?.data || error.message,
-        );
-        alert("Failed to book the table. Please try again.");
-      });
+    createReservation(reservationData);
   };
 
+  const navigate = useNavigate();
+
   // Fetch tables for the restaurant
-  const { data, isLoading, error } = useQuery({
+  const { data } = useQuery({
     queryFn: () =>
       api.get(`/tables/restaurant/${id}`).then((res) => res.data.data),
     queryKey: ["tables", id],
+  });
+
+  const { mutateAsync: createReservation, isPending: creating } = useMutation({
+    mutationFn: (reservationData) =>
+      api.post("/reservations/create", reservationData, {
+        headers: {
+          token: localStorage.getItem("token"),
+        },
+      }),
+    onSuccess: (data) => {
+      console.log("Reservation Created Successfully:", data);
+      toast.success("Table booked successfully!");
+      navigate("/user/reservations");
+    },
+    onError: (error) => {
+      console.error(
+        "Error creating reservation:",
+        error.response?.data || error.message,
+      );
+      toast.error("Failed to book the table. Please try again.");
+    },
   });
 
   const tables = data || [];
@@ -107,24 +114,21 @@ export default function BookTable() {
           <h2 className="text-2xl font-bold mb-4">Book a Table</h2>
           <form className="space-y-4" onSubmit={handleSubmit}>
             <input
+              type="number"
+              value={guestCount}
+              onChange={(e) => setGuestCount(e.target.value)}
+              className="w-full border px-3 py-2 rounded-lg"
+              placeholder="Guest Count"
+              required
+            />
+
+            <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
               className="w-full border px-3 py-2 rounded-lg"
               required
             />
-            <Select onValueChange={(value) => setGuestCount(value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Choose guest count" />
-              </SelectTrigger>
-              <SelectContent>
-                {[1, 2, 3, 4, 5, 6].map((count) => (
-                  <SelectItem key={count} value={count}>
-                    {count}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
             <input
               type="time"
               value={time}
@@ -134,9 +138,10 @@ export default function BookTable() {
             />
             <button
               onClick={handleSubmit}
-              className="w-full bg-red-500 text-white py-2 rounded-xl hover:bg-red-600"
+              disabled={!tableId || !guestCount || !date || !time || creating}
+              className="w-full bg-red-500 text-white py-2 rounded-xl hover:bg-red-600 disabled:opacity-50"
             >
-              Find a Table
+              {creating ? "Booking..." : "Book Table"}
             </button>
           </form>
         </div>

@@ -11,14 +11,14 @@ export default function Navbar() {
     { name: "Reviews", url: "/user/reviews" },
 
     { name: "Restaurants", url: "/restaurants" },
-    { name: "Orders", url: "/user/reservations" },
+    { name: "Reservations", url: "/user/reservations" },
   ];
   const OwnerLinks = [
     { name: "Home", url: "/" },
     { name: "Tables", url: "/owner/tables" },
     { name: "Reviews", url: "/owner/reviews" },
-    { name: "Reservation", url: "/owner/reservations" },
-    { name: "meals", url: "/owner/meals" },
+    { name: "Reservations", url: "/owner/reservations" },
+    { name: "Meals", url: "/owner/meals" },
   ];
 
   const { user, setUser } = useAuthStore();
