@@ -62,7 +62,7 @@ export default function Restaurant() {
           {/* Restaurant Header */}
           <div className="relative mb-6">
             <img
-              src={restaurant.profileImage.secure_url}
+              src={restaurant.profileImage?.secure_url}
               alt={restaurant.name}
               className="w-full h-64 object-cover rounded-md"
             />

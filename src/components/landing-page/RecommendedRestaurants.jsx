@@ -130,7 +130,7 @@ export function Recommended_res() {
                                 duration: 0.4,
                                 ease: [0.23, 1, 0.32, 1],
                               }}
-                              src={restaurant.profileImage.secure_url}
+                              src={restaurant.profileImage?.secure_url}
                               alt={restaurant.name}
                               className="w-full h-[160px] object-cover p-2 rounded-3xl"
                             />

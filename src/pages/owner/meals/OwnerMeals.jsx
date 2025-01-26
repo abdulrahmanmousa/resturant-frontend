@@ -1,290 +1,378 @@
-import React, { useState, useEffect } from "react";
-import api from "../../../lib/apiInstance"; // Your API instance
-import Layout from "../../../components/layout/layout";
+import { useState, useEffect } from "react";
+import { Plus, Edit, Trash2 } from "lucide-react";
+import Layout from "@/components/layout/layout.jsx";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import api from "@/lib/apiInstance";
+import { toast } from "sonner";
+import PageLoading from "../../../components/PageLoading";
 
 export default function OwnerMeals() {
   const [meals, setMeals] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [newMeal, setNewMeal] = useState({
     name: "",
     desc: "",
     price: "",
-    restaurantId: JSON.parse(localStorage.getItem("user")).restaurant, // Replace with dynamic value if needed
     image: null,
   });
-  const [editMeal, setEditMeal] = useState(null); // Meal to edit
-  const [loading, setLoading] = useState(true);
+  const [editingMeal, setEditingMeal] = useState(null);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
-  // Fetch Meals for the Restaurant
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const restaurantId = user?.restaurant;
+
   useEffect(() => {
-    const restaurantId = newMeal.restaurantId;
-    api
-      .get(`/meals/restaurant/${restaurantId}`, {
-        headers: {
-          token: localStorage.getItem("token"), // Include token in headers
-        },
-      })
-      .then((response) => {
-        setMeals(response.data.meals); // Assuming `meals` is the key in the response
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error(
-          "Error fetching meals:",
-          error.response?.data || error.message
-        );
-        setLoading(false);
+    if (!restaurantId) {
+      console.error("Restaurant ID is missing.");
+      setLoading(false);
+      return;
+    }
+
+    fetchMeals();
+  }, [restaurantId]);
+
+  const fetchMeals = async () => {
+    try {
+      const response = await api.get(`/meals/restaurant/${restaurantId}`, {
+        headers: { token: localStorage.getItem("token") },
       });
-  }, []);
-
-  // Handle Input Changes for New Meal
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNewMeal({ ...newMeal, [name]: value });
+      if (response.data && response.data.meals) {
+        setMeals(response.data.meals);
+      }
+    } catch (error) {
+      console.error("Error fetching meals:", error);
+      toast.error("Failed to fetch meals. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Handle Image Upload
-  const handleImageUpload = (e) => {
-    setNewMeal({ ...newMeal, image: e.target.files[0] });
-  };
-
-  // Add a New Meal
-  const handleAddMeal = (e) => {
+  const handleAddMeal = async (e) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("name", newMeal.name);
     formData.append("desc", newMeal.desc);
     formData.append("price", newMeal.price);
-    formData.append("restaurantId", newMeal.restaurantId);
+    formData.append("restaurantId", restaurantId);
     if (newMeal.image) {
       formData.append("image", newMeal.image);
     }
 
-    api
-      .post("/meals/create", formData, {
+    try {
+      const response = await api.post("/meals/create", formData, {
         headers: {
-          token: localStorage.getItem("token"), // Include token in headers
-
+          token: localStorage.getItem("token"),
           "Content-Type": "multipart/form-data",
         },
-      })
-      .then((response) => {
-        setMeals([...meals, response.data.meal]); // Add the new meal to the list
-        setNewMeal({
-          name: "",
-          desc: "",
-          price: "",
-          restaurantId: newMeal.restaurantId,
-          image: null,
-        }); // Reset the form
-        alert("Meal added successfully!");
-      })
-      .catch((error) => {
-        console.error(
-          "Error adding meal:",
-          error.response?.data || error.message
-        );
-        alert("Failed to add meal. Please try again.");
       });
+      if (response.data && response.data.meal) {
+        setMeals([...meals, response.data.meal]);
+        setNewMeal({ name: "", desc: "", price: "", image: null });
+        setIsAddDialogOpen(false);
+        toast.success("Meal added successfully!");
+      }
+    } catch (error) {
+      console.error("Error adding meal:", error);
+      toast.error("Failed to add meal. Please try again.");
+    }
   };
 
-  // Update Meal
-  const handleUpdateMeal = (mealId) => {
+  const handleUpdateMeal = async (e) => {
+    e.preventDefault();
+    if (!editingMeal) return;
+
     const formData = new FormData();
-    formData.append("name", editMeal.name);
-    formData.append("desc", editMeal.desc);
-    formData.append("price", editMeal.price);
-    if (editMeal.image) {
-      formData.append("image", editMeal.image);
+    formData.append("name", editingMeal.name);
+    formData.append("desc", editingMeal.desc);
+    formData.append("price", editingMeal.price.toString());
+    if (editingMeal.image && typeof editingMeal.image !== "string") {
+      formData.append("image", editingMeal.image);
     }
 
-    api
-      .put(`/meals/update/${mealId}`, formData, {
-        headers: {
-          token: localStorage.getItem("token"), // Include token in headers
-
-          "Content-Type": "multipart/form-data",
+    try {
+      const response = await api.put(
+        `/meals/update/${editingMeal._id}`,
+        formData,
+        {
+          headers: {
+            token: localStorage.getItem("token"),
+            "Content-Type": "multipart/form-data",
+          },
         },
-      })
-      .then((response) => {
-        setMeals((prevMeals) =>
-          prevMeals.map((meal) =>
-            meal._id === mealId ? { ...meal, ...response.data.meal } : meal
-          )
+      );
+      if (response.data && response.data.meal) {
+        setMeals(
+          meals.map((meal) =>
+            meal._id === editingMeal._id
+              ? { ...meal, ...response.data.meal }
+              : meal,
+          ),
         );
-        setEditMeal(null); // Clear edit state
-        alert("Meal updated successfully!");
-      })
-      .catch((error) => {
-        console.error(
-          "Error updating meal:",
-          error.response?.data || error.message
-        );
-        alert("Failed to update meal. Please try again.");
-      });
+        setIsEditDialogOpen(false);
+        toast.success("Meal updated successfully!");
+      }
+    } catch (error) {
+      console.error("Error updating meal:", error);
+      toast.error("Failed to update meal. Please try again.");
+    }
   };
 
-  // Delete Meal
-  const handleDeleteMeal = (mealId) => {
+  const handleDeleteMeal = async (mealId) => {
     if (!window.confirm("Are you sure you want to delete this meal?")) return;
 
-    api
-      .delete(`/meals/delete/${mealId}`, {
-        headers: {
-          token: localStorage.getItem("token"), // Include token in headers
-        },
-      })
-      .then(() => {
-        setMeals((prevMeals) =>
-          prevMeals.filter((meal) => meal._id !== mealId)
-        );
-        alert("Meal deleted successfully!");
-      })
-      .catch((error) => {
-        console.error(
-          "Error deleting meal:",
-          error.response?.data || error.message
-        );
-        alert("Failed to delete meal. Please try again.");
+    try {
+      await api.delete(`/meals/delete/${mealId}`, {
+        headers: { token: localStorage.getItem("token") },
       });
+      setMeals(meals.filter((meal) => meal._id !== mealId));
+      toast.success("Meal deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting meal:", error);
+      toast.error("Failed to delete meal. Please try again.");
+    }
   };
 
   if (loading) {
-    return <div>Loading meals...</div>;
+    return (
+      <Layout>
+        <PageLoading />
+      </Layout>
+    );
   }
 
   return (
     <Layout>
-      <div className="max-w-6xl mx-auto p-6">
-        <h1 className="text-2xl font-bold mb-6">Owner Meals</h1>
-        {/* Add New Meal Form */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Add a New Meal</h2>
-          <form onSubmit={handleAddMeal} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium">Meal Name</label>
-              <input
-                type="text"
-                name="name"
-                value={newMeal.name}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium">Description</label>
-              <textarea
-                name="desc"
-                value={newMeal.desc}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-                required
-              ></textarea>
-            </div>
-            <div>
-              <label className="block text-sm font-medium">Price</label>
-              <input
-                type="number"
-                name="price"
-                value={newMeal.price}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium">Image</label>
-              <input
-                type="file"
-                name="image"
-                onChange={handleImageUpload}
-                className="w-full"
-              />
-            </div>
-            <button
-              type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
-              Add Meal
-            </button>
-          </form>
+      <div className="container mx-auto p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold">Manage Meals</h1>
+          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" /> Add New Meal
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Add New Meal</DialogTitle>
+                <DialogDescription>
+                  Enter the details for the new meal.
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleAddMeal}>
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="name" className="text-right">
+                      Name
+                    </Label>
+                    <Input
+                      id="name"
+                      value={newMeal.name}
+                      onChange={(e) =>
+                        setNewMeal({ ...newMeal, name: e.target.value })
+                      }
+                      className="col-span-3"
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="desc" className="text-right">
+                      Description
+                    </Label>
+                    <Textarea
+                      id="desc"
+                      value={newMeal.desc}
+                      onChange={(e) =>
+                        setNewMeal({ ...newMeal, desc: e.target.value })
+                      }
+                      className="col-span-3"
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="price" className="text-right">
+                      Price
+                    </Label>
+                    <Input
+                      id="price"
+                      type="number"
+                      value={newMeal.price}
+                      onChange={(e) =>
+                        setNewMeal({ ...newMeal, price: e.target.value })
+                      }
+                      className="col-span-3"
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="image" className="text-right">
+                      Image
+                    </Label>
+                    <Input
+                      id="image"
+                      type="file"
+                      onChange={(e) =>
+                        setNewMeal({
+                          ...newMeal,
+                          image: e.target.files?.[0] || null,
+                        })
+                      }
+                      className="col-span-3"
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button type="submit">Add Meal</Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
 
-        {/* Meal List */}
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Existing Meals</h2>
-          {meals.length === 0 ? (
-            <p>No meals found for this restaurant.</p>
-          ) : (
-            <ul className="space-y-4">
-              {meals.map((meal) => (
-                <li key={meal._id} className="p-4 border rounded shadow">
-                  <h3 className="font-bold text-lg">{meal.name}</h3>
-                  <p>{meal.desc}</p>
-                  <p className="text-gray-600">Price: ${meal.price}</p>
-                  <button
-                    onClick={() => setEditMeal(meal)}
-                    className="text-blue-500 mr-4"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteMeal(meal._id)}
-                    className="text-red-500"
-                  >
-                    Delete
-                  </button>
-                  {editMeal?._id === meal._id && (
-                    <form
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        handleUpdateMeal(meal._id);
-                      }}
-                      className="mt-4"
-                    >
-                      <input
-                        type="text"
-                        name="name"
-                        value={editMeal.name}
-                        onChange={(e) =>
-                          setEditMeal({ ...editMeal, name: e.target.value })
-                        }
-                        className="border p-2 mb-2 w-full"
-                        placeholder="Edit meal name"
-                      />
-                      <input
-                        type="text"
-                        name="desc"
-                        value={editMeal.desc}
-                        onChange={(e) =>
-                          setEditMeal({ ...editMeal, desc: e.target.value })
-                        }
-                        className="border p-2 mb-2 w-full"
-                        placeholder="Edit meal description"
-                      />
-                      <input
-                        type="text"
-                        name="price"
-                        value={editMeal.price}
-                        onChange={(e) =>
-                          setEditMeal({ ...editMeal, price: e.target.value })
-                        }
-                        className="border p-2 mb-2 w-full"
-                        placeholder="Edit meal price"
-                      />
-                      <button
-                        type="submit"
-                        className="bg-blue-500 text-white px-4 py-2 rounded"
-                      >
-                        Save
-                      </button>
-                    </form>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {meals.map((meal) => (
+            <Card key={meal._id}>
+              <CardHeader>
+                <CardTitle>{meal.name}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="aspect-video relative mb-4">
+                  <img
+                    src={meal.image?.secure_url || "/placeholder.svg"}
+                    alt={meal.name}
+                    fill
+                    className="object-cover rounded-md aspect-square"
+                  />
+                </div>
+                <p className="text-sm text-gray-500 mb-2">{meal.desc}</p>
+                <p className="font-semibold">Price: ${meal.price.toFixed(2)}</p>
+              </CardContent>
+              <CardFooter className="flex justify-between">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setEditingMeal(meal);
+                    setIsEditDialogOpen(true);
+                  }}
+                >
+                  <Edit className="mr-2 h-4 w-4" /> Edit
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={() => handleDeleteMeal(meal._id)}
+                >
+                  <Trash2 className="mr-2 h-4 w-4" /> Delete
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
         </div>
+
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Edit Meal</DialogTitle>
+              <DialogDescription>
+                Update the details for this meal.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleUpdateMeal}>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="editName" className="text-right">
+                    Name
+                  </Label>
+                  <Input
+                    id="editName"
+                    value={editingMeal?.name || ""}
+                    onChange={(e) =>
+                      setEditingMeal(
+                        editingMeal
+                          ? { ...editingMeal, name: e.target.value }
+                          : null,
+                      )
+                    }
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="editDesc" className="text-right">
+                    Description
+                  </Label>
+                  <Textarea
+                    id="editDesc"
+                    value={editingMeal?.desc || ""}
+                    onChange={(e) =>
+                      setEditingMeal(
+                        editingMeal
+                          ? { ...editingMeal, desc: e.target.value }
+                          : null,
+                      )
+                    }
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="editPrice" className="text-right">
+                    Price
+                  </Label>
+                  <Input
+                    id="editPrice"
+                    type="number"
+                    value={editingMeal?.price || ""}
+                    onChange={(e) =>
+                      setEditingMeal(
+                        editingMeal
+                          ? { ...editingMeal, price: Number(e.target.value) }
+                          : null,
+                      )
+                    }
+                    className="col-span-3"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="editImage" className="text-right">
+                    Image
+                  </Label>
+                  <Input
+                    id="editImage"
+                    type="file"
+                    onChange={(e) =>
+                      setEditingMeal(
+                        editingMeal
+                          ? {
+                              ...editingMeal,
+                              image: e.target.files?.[0] || editingMeal.image,
+                            }
+                          : null,
+                      )
+                    }
+                    className="col-span-3"
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="submit">Update Meal</Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );
