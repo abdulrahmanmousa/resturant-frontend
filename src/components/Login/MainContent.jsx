@@ -63,7 +63,7 @@ export default function MainContent() {
       })
       .catch((error) => {
         console.error("Error:", error.response?.data || error.message);
-        toast.error(error.response?.data?.err_msg || error.message);
+        toast.error(error.response?.data?.message || error.message);
       })
       .finally(() => {
         setLoading(false);
