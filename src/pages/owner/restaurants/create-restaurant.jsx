@@ -73,28 +73,42 @@ export default function CreateRestaurant() {
   const { mutateAsync: createRestaurantMutation, isPending: creating } =
     useMutation({
       mutationKey: ["createRestaurant"],
-      mutationFn: async (data) =>
-        api.post("restaurants/create", data, {
+      mutationFn: async (data) => {
+        const response = await api.post("restaurants/create/data", data, {
           headers: {
-            "Content-Type": "multipart/form-data",
             token: localStorage.getItem("token"),
             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           },
-        }),
+        });
+        data.append("restaurantId", response.data.restaurant._id);
+        return await api.post(
+          "restaurants/create/images",
+          data,
+
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              token: localStorage.getItem("token"),
+              Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+            },
+          }
+        );
+      },
+
       onSuccess: (response) => {
         console.log("Restaurant added successfully:", response.data);
         toast.success("Restaurant added successfully!");
         setUser({ ...user, restaurant: response.data.restaurant._id });
         localStorage.setItem(
           "user",
-          JSON.stringify({ ...user, restaurant: response.data.restaurant._id }),
+          JSON.stringify({ ...user, restaurant: response.data.restaurant._id })
         );
         navigate("/");
       },
       onError: (error) => {
         console.error(
           "Error adding restaurant:",
-          error.response?.data || error.message,
+          error.response?.data || error.message
         );
         toast.error("Failed to add restaurant. Please try again.");
       },
