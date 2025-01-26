@@ -59,7 +59,7 @@ export default function SignUp() {
         navigate("/login");
       })
       .catch((error) => {
-        toast.error(error?.response?.data || error?.message);
+        toast.error(error?.response?.data?.message || error?.message);
         console.error("Error:", error.response?.data || error.message);
       });
   };
