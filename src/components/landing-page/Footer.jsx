@@ -4,8 +4,8 @@ import { Input } from "@/components/ui/input";
 
 export default function Footer() {
   return (
-    <>
-      <div className="text-white bg-red-600 grid">
+    <div className="">
+      <div className="text-black w-[95%] bg-red-50/40  mx-auto border border-red-100  rounded-3xl mt-20 mb-4 grid">
         <div
           style={{ padding: "20px" }}
           className="bg-transparent grid grid-cols-2"
@@ -89,6 +89,6 @@ export default function Footer() {
           </p>
         </div>
       </div>
-    </>
+    </div>
   );
 }

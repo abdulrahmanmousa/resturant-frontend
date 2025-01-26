@@ -70,7 +70,7 @@ export default function Restaurants() {
   if (error) return <div>Error loading restaurants</div>;
 
   return (
-    <Layout>
+    <Layout hasFooter={false}>
       {isPending ? (
         <PageLoading />
       ) : (

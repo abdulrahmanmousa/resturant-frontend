@@ -246,7 +246,7 @@ const ExplorePage = () => {
   }, [minPrice, maxPrice]);
 
   return (
-    <Layout>
+    <Layout hasFooter={false}>
       <motion.div
         className="min-h-screen bg-gray-50"
         variants={containerVariants}
