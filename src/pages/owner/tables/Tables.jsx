@@ -133,7 +133,7 @@ export default function Tables() {
           <h1 className="text-3xl font-bold">Manage Tables</h1>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-red-500">
+              <Button>
                 <Plus className="mr-2 h-4 w-4" /> Add New Table
               </Button>
             </DialogTrigger>
@@ -178,9 +178,7 @@ export default function Tables() {
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button type="submit" className={"bg-red-500"}>
-                    Add Table
-                  </Button>
+                  <Button type="submit">Add Table</Button>
                 </DialogFooter>
               </form>
             </DialogContent>
