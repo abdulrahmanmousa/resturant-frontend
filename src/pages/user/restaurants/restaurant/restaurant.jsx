@@ -130,7 +130,7 @@ export default function Restaurant() {
             ))}
             <RestaurantMealsModal restaurantId={id} />
           </div>
-          <BookTable />
+          <BookTable restaurant={restaurant} />
           <RestaurantReviews restaurantId={id} />
         </div>
       )}

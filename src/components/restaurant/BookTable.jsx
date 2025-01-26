@@ -7,7 +7,7 @@ import { cn } from "../../lib/utils";
 import { toast } from "sonner";
 import useAuthStore from "../../store/auth-store";
 
-export default function BookTable() {
+export default function BookTable({ restaurant }) {
   const [guestCount, setGuestCount] = useState(null);
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [time, setTime] = useState(
@@ -78,7 +78,7 @@ export default function BookTable() {
           Table Availability
         </h1>
         <img
-          src="https://i.pinimg.com/736x/3d/5b/a8/3d5ba8dbfc44cb0289960774e742c38e.jpg"
+          src={restaurant?.layoutImage?.secure_url}
           alt="Table Layout"
           className="max-w-[70vw] mx-auto object-cover rounded-3xl overflow-hidden max-h-[60vh]"
         />
