@@ -1,10 +1,11 @@
 import React from "react";
 import Layout from "../../components/layout/layout";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { use } from "react";
 import { useState, useEffect } from "react";
 import api from "../../lib/apiInstance";
+import { toast } from "sonner";
 
 export default function SignUp() {
   const [preview, setPreview] = useState(null); // To store the image preview URL
@@ -31,6 +32,7 @@ export default function SignUp() {
     }
   };
 
+  const navigate = useNavigate();
   // Handle form submission
   const onsubmit = () => {
     const formData = new FormData();
@@ -51,8 +53,11 @@ export default function SignUp() {
       })
       .then((response) => {
         console.log("Success:", response.data);
+        toast.success("Account created successfully!");
+        navigate("/login");
       })
       .catch((error) => {
+        toast.error(error?.response?.data || error?.message);
         console.error("Error:", error.response?.data || error.message);
       });
   };
