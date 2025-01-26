@@ -1,10 +1,11 @@
+import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/apiInstance";
 import { Link } from "react-router-dom";
 import * as React from "react";
 
 import {
   Card,
   CardHeader,
-  CardContent,
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
@@ -12,43 +13,14 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 
 export default function FeaturedDishes() {
-  const dishes = [
-    {
-      name: "Grilled Steak",
-      description: "Perfectly cooked with spices",
-      image:
-        "https://img.freepik.com/free-photo/grilled-steak-vegetables_2829-16635.jpg",
-    },
-    {
-      name: "Seafood Pasta",
-      description: "Rich and creamy seafood delight",
-      image:
-        "https://img.freepik.com/free-photo/delicious-seafood-pasta_1220-5226.jpg",
-    },
-    {
-      name: "Sushi Platter",
-      description: "Fresh and authentic sushi",
-      image:
-        "https://img.freepik.com/free-photo/fresh-sushi-set_176420-219.jpg",
-    },
-    {
-      name: "Vegan Salad",
-      description: "Healthy and full of flavor",
-      image:
-        "https://img.freepik.com/free-photo/vegan-salad-with-fresh-vegetables_2829-19288.jpg",
-    },
-    {
-      name: "Cheesecake",
-      description: "Smooth and delicious dessert",
-      image:
-        "https://img.freepik.com/free-photo/slice-cheesecake-with-fruits_2829-13216.jpg",
-    },
-  ];
+  const { data, isPending } = useQuery({
+    queryFn: () => api.get("/meals/featured").then((res) => res.data.meals),
+    queryKey: ["meals"],
+  });
+  const dishes = data;
 
   return (
     <div className="mt-14">
@@ -57,11 +29,10 @@ export default function FeaturedDishes() {
       </h1>
       <Carousel className="w-3/4 m-auto">
         <CarouselContent className="flex gap-4">
-          {dishes.map((dish, index) => (
+          {dishes?.map((dish, index) => (
             <Link
               to={{
-                pathname: `/dishs/${dish.id}`,
-                state: { dish },
+                pathname: `restaurants/${dish.restaurantId}`,
               }}
               key={index}
             >
@@ -70,18 +41,16 @@ export default function FeaturedDishes() {
                 key={index}
                 className="basis-1/5 border-none shadow-none"
               >
-                <Card className="w-full  hover:bg-gray-200 transition-all border-none shadow-none ">
+                <Card className="w-full min-w-[300px]  hover:bg-gray-200 transition-all border-none shadow-none ">
                   <img
-                    src={dish.image}
+                    src={dish.image?.secure_url}
                     alt={dish.name}
                     className="w-full h-[160px] object-cover p-2 rounded-3xl"
                   />
                   <CardHeader className="px-4 py-2">
                     <CardTitle>{dish.name}</CardTitle>
                     <CardDescription>
-                      <p className="text-sm text-gray-600 text-center">
-                        Experience world-class dining.
-                      </p>
+                      <p className="text-sm text-gray-600 ">{dish.desc}</p>
                     </CardDescription>
                   </CardHeader>
                 </Card>
