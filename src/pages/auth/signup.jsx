@@ -22,6 +22,7 @@ export default function SignUp() {
   const handelname = (e) => setData({ ...data, name: e.target.value });
   const handelemail = (e) => setData({ ...data, email: e.target.value });
   const handelpassword = (e) => setData({ ...data, password: e.target.value });
+  const handlePhone = (e) => setData({ ...data, phone: e.target.value });
 
   // Handle image upload
   const handleImageUpload = (e) => {
@@ -40,6 +41,7 @@ export default function SignUp() {
     formData.append("email", data.email);
     formData.append("password", data.password);
     formData.append("role", data.role);
+    formData.append("phone", data.phone);
     if (data.image) {
       formData.append("image", data.image); // Append image file
     }
@@ -204,6 +206,7 @@ export default function SignUp() {
             <input
               type="tel"
               id="phone"
+              onChange={handlePhone}
               placeholder="(123) 456-7890"
               className="mt-1 block w-full px-4 py-2 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all duration-200"
             />
