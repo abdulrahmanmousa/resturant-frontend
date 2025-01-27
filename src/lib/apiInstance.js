@@ -22,10 +22,6 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (response) => {
-    // if (response.data && response.data.data && !response.data.token) {
-    //   response.data = response.data.data;
-    //   delete response.data.data;
-    // }
     return response;
   },
   async (error) => {
@@ -44,14 +40,14 @@ api.interceptors.response.use(
           `${import.meta.env.VITE_BASE_URL}/api/v1/auth/refresh-token`,
           {
             refreshToken: localStorage.getItem("refreshToken"),
-          },
+          }
         );
         console.log("Token refreshed");
         const data = response.data;
         localStorage.setItem("token", data.token);
         localStorage.setItem(
           "expires",
-          String(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
+          String(new Date().getTime() + 7 * 24 * 60 * 60 * 1000)
         );
 
         originalRequest.headers.Authorization = `Bearer ${token}`;
@@ -82,7 +78,7 @@ api.interceptors.response.use(
           {
             description:
               "Please contact support for more information:\n support@outfitters.com. you will be redirected to the login page",
-          },
+          }
         );
         setTimeout(() => {
           window.location.href = "/";
@@ -91,7 +87,7 @@ api.interceptors.response.use(
       suspended = true;
     }
     return Promise.reject(error);
-  },
+  }
 );
 
 export default api;

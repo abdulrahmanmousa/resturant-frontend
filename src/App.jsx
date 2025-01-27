@@ -1,5 +1,11 @@
 import React from "react";
-import { Routes, Route, HashRouter, Outlet } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  HashRouter,
+  Outlet,
+  useLocation,
+} from "react-router-dom";
 import { Toaster } from "sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import LandingPage from "./pages/user/landing-page/landing-page";
@@ -19,7 +25,7 @@ import OwnerMeals from "./pages/owner/meals/OwnerMeals";
 import Reviews from "./pages/owner/reviews/Reviews";
 import Tables from "./pages/owner/tables/Tables";
 import UserReviews from "./pages/user/reviews/UserReviews";
-
+import ScrollToTop from "./components/ScrollToTop";
 // Define the Users component
 function Users() {
   return <Outlet />; // Renders child routes
@@ -31,6 +37,8 @@ function App() {
     <HashRouter>
       <QueryClientProvider client={queryClient}>
         <Routes>
+          <Route element={<ScrollToTop />} />
+
           {/* Main Routes */}
           <Route
             path="/owner/restaurants/create"
